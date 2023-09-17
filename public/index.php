@@ -1,12 +1,20 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once "../database/connection.php";
 require_once "../helpers/dump-and-die.php";
+require_once "../helpers/display-view.php";
+require_once "../app/controllers/auth.controller.php";
 require_once "../app/route.php";
 require_once "../app/router.php";
 
 require_once "../routes/web.php";
 require_once "../routes/api.php";
+
+// Report all PHP errors
 
 function __start()
 {

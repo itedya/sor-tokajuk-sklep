@@ -1,11 +1,11 @@
 <?php
 
 Router::addRoute(new Route("/auth/register", "GET", function () {
-    echo "Register";
+    AuthController::getInstance()->register();
 }));
 
 Router::addRoute(new Route("/auth/login", "GET", function () {
-    echo "Login";
+    AuthController::getInstance()->login();
 }));
 
 Router::addRoute(new Route("/", "GET", function () {
