@@ -1,0 +1,1 @@
+Hello world! You are now viewing: <?= $_SERVER['REQUEST_URI']; ?>
