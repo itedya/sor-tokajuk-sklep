@@ -21,8 +21,9 @@ $body = <<<HTML
         </div>
     </div>
 
-    <div class="flex justify-end">
+    <div class="flex flex-col sm:flex-row-reverse items-center justify-between gap-4">
         <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">Zaloguj</button>
+        <a class="text-center w-full text-blue-200 sm:w-auto" href="/auth/forgot-password.php">Nie pamiętam hasła</a>
     </div>
 </form>
 </div>
