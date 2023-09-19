@@ -8,9 +8,9 @@
     <title>Logowanie</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-neutral-900 min-h-screen w-full flex justify-center items-center">
-<form method="POST" action="/api/auth/login" class="w-full max-w-xl p-4 flex flex-col gap-8">
-    <h1 class="text-4xl font-bold text-center text-neutral-400">Logowanie</h1>
+<body class="bg-neutral-900 min-h-screen w-full flex justify-center items-center p-4">
+<form method="POST" action="/api/auth/login.php" class="w-full max-w-xl p-4 flex flex-col gap-8 bg-gradient-to-tr from-neutral-900 to-neutral-800 rounded-xl">
+    <h1 class="text-4xl font-bold text-center text-neutral-300">Logowanie</h1>
 
     <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
@@ -24,10 +24,10 @@
             <input type="password" name="password" id="password"
                    class="p-4 bg-neutral-800 rounded-xl border-neutral-700 focus:outline-none text-lg text-neutral-300"/>
         </div>
+    </div>
 
-        <div class="flex justify-end">
-            <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">Zaloguj</button>
-        </div>
+    <div class="flex justify-end">
+        <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">Zaloguj</button>
     </div>
 </form>
 </body>
