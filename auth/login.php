@@ -2,9 +2,29 @@
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
+$errors = [];
+
+function postMethod() {
+    if (!isset($_POST['email'])) {
+        $errors['email'] = 'Email jest wymagany!';
+        return;
+    }
+    if (!isset($_POST['password'])) {
+        $errors['password'] = 'Hasło jest wymagane!';
+        return;
+    }
+    $password = $_POST['password'];
+    $email = $_POST['email'];   
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    postMethod();
+}
+
+
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">
-<form method="POST" action="/api/auth/login.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
+<form method="POST" action="/auth/login.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
     <h1 class="text-4xl font-bold text-center text-neutral-300">Logowanie</h1>
 
     <div class="flex flex-col gap-4">
