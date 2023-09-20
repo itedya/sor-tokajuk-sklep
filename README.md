@@ -7,7 +7,7 @@
 ## Logowanie
 
 **Metoda**: POST
-**URL**: /api/auth/login.php
+**URL**: /auth/login.php
 
 ```json
 {
@@ -16,13 +16,13 @@
 }
 ```
 
-jeżeli hasło złe lub email nie odpowiada żadnemu użytkownikowi w bazie to status 400 + jakaś odpowiedź
-jeżeli ok kod 204 i fajrant
+jeżeli hasło złe lub email nie odpowiada żadnemu użytkownikowi w bazie to wróć do /auth/login.php i w sesji daj errory
+jeżeli ok to przekieruj do /index.php i utwórz sesję z użytkownikiem
 
 ## Rejestracja
 
 **Metoda**: POST
-**URL**: /api/auth/register.php
+**URL**: /auth/register.php
 
 ```json
 {
@@ -32,6 +32,6 @@ jeżeli ok kod 204 i fajrant
 }
 ```
 
-jeżeli hasło za krótkie, albo email za krótki itd. czyli walidcja to też jakaś odpowiedź + status 400  
-jeżeli email zajęty to kod 409 i jakaś odpowiedź  
-jeżeli ok kod 204 i fajrant
+jeżeli hasło za krótkie, albo email za krótki itd. czyli walidcja to wróć do /auth/register.php i w sesji daj errory
+jeżeli email zajęty to wróć do /auth/register.php i w sesji daj errory
+jeżeli ok to w sesji daj powiadomienie, że pomyślnie zarejestrowano i przekieruj do /auth/login.php
