@@ -4,7 +4,8 @@ loadFrontendTooling("..");
 
 $errors = [];
 
-function postMethod() {
+function postMethod()
+{
     if (!isset($_POST['email'])) {
         $errors['email'] = 'Email jest wymagany!';
         return;
@@ -19,22 +20,24 @@ function postMethod() {
     login($email, $password);
 }
 
-function login($email, $password) {
+function login($email, $password)
+{
     $conn = require "../database.php";
     $stmt = $conn->prepare("Select id, haslo from users where email = ?");
 
     /* bind parameters for markers */
     $stmt->bind_param("s", $email);
-    
+
     /* execute query */
     $stmt->execute();
+
+    $id = null;
+    $passwordFromDB = null;
 
     $stmt->bind_result($id, $passwordFromDB);
 
     if ($stmt->fetch()) {
-        var_dump($passwordFromDB, $password);
-        
-        if($passwordFromDB != $password) {
+        if ($passwordFromDB != $password) {
             $errors['email'] = 'Dane do logowania nie zgadzają się';
             return;
         }
@@ -51,9 +54,6 @@ function login($email, $password) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     postMethod();
 }
-
-var_dump($errors);
-
 
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">
