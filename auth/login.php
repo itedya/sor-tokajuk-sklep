@@ -1,23 +1,20 @@
 <?php
+
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
-$errors = [];
-
 function postMethod()
 {
-    if (!isset($_POST['email'])) {
-        $errors['email'] = 'Email jest wymagany!';
-        return;
-    }
-    if (!isset($_POST['password'])) {
-        $errors['password'] = 'Hasło jest wymagane!';
-        return;
-    }
-    $password = $_POST['password'];
-    $email = $_POST['email'];
+    ValidationErrorFacade::clear();
 
-    login($email, $password);
+    if (!isset($_POST['email'])) ValidationErrorFacade::add('email', 'Email jest wymagany!');
+    if (!isset($_POST['password'])) ValidationErrorFacade::add('password', 'Hasło jest wymagane!');
+
+    if (ValidationErrorFacade::hasErrors()) {
+        return;
+    }
+
+    login($_POST['email'], $_POST['password']);
 }
 
 function login($email, $password)
@@ -38,7 +35,7 @@ function login($email, $password)
 
     if ($stmt->fetch()) {
         if ($passwordFromDB != $password) {
-            $errors['email'] = 'Dane do logowania nie zgadzają się';
+            ValidationErrorFacade::add('email', 'Dane do logowania nie zgadzają się');
             return;
         }
 
@@ -47,13 +44,18 @@ function login($email, $password)
         $_SESSION['user_id'] = $id;
         header('Location: ../index.php');
     } else {
-        $errors['email'] = 'Dane do logowania nie zgadzają się';
+        ValidationErrorFacade::add('email', 'Dane do logowania nie zgadzają się');
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     postMethod();
 }
+
+$errors = [
+    'email' => ValidationErrorFacade::renderInComponent("email"),
+    'password' => ValidationErrorFacade::renderInComponent("password"),
+];
 
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">
@@ -65,12 +67,14 @@ $body = <<<HTML
             <label for="email" class="text-lg text-neutral-300 font-semibold mx-2">Email</label>
             <input type="email" name="email" id="email"
                    class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
+                   {$errors['email']}
         </div>
 
         <div class="flex flex-col gap-1">
             <label for="password" class="text-lg text-neutral-300 font-semibold mx-2">Hasło</label>
             <input type="password" name="password" id="password"
                    class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
+                   {$errors['password']}
         </div>
     </div>
 
@@ -81,6 +85,8 @@ $body = <<<HTML
 </form>
 </div>
 HTML;
+
+ValidationErrorFacade::clear();
 
 echo (new Layout($body))->render();
 ?>
