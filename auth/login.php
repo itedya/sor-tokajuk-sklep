@@ -14,12 +14,45 @@ function postMethod() {
         return;
     }
     $password = $_POST['password'];
-    $email = $_POST['email'];   
+    $email = $_POST['email'];
+
+    login($email, $password);
+}
+
+function login($email, $password) {
+    $conn = require "../database.php";
+    $stmt = $conn->prepare("Select id, haslo from users where email = ?");
+
+    /* bind parameters for markers */
+    $stmt->bind_param("s", $email);
+    
+    /* execute query */
+    $stmt->execute();
+
+    $stmt->bind_result($id, $passwordFromDB);
+
+    if ($stmt->fetch()) {
+        var_dump($passwordFromDB, $password);
+        
+        if($passwordFromDB != $password) {
+            $errors['email'] = 'Dane do logowania nie zgadzają się';
+            return;
+        }
+
+        session_start();
+
+        $_SESSION['user_id'] = $id;
+        header('Location: ../index.php');
+    } else {
+        $errors['email'] = 'Dane do logowania nie zgadzają się';
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     postMethod();
 }
+
+var_dump($errors);
 
 
 $body = <<<HTML
