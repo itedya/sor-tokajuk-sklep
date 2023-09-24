@@ -9,14 +9,11 @@ function postMethod()
     if (!isset($_POST['email'])) ValidationErrorFacade::add('email', 'Email jest wymagany!');
     if (!isset($_POST['password'])) ValidationErrorFacade::add('password', 'Hasło jest wymagane!');
 
-
     register($_POST['email'], $_POST['password'], $_POST['repeat_password']);
 }
 
 function register($email, $password, $repeat_password)
 {
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
     if (empty($email)) ValidationErrorFacade::add("email", "Email jest wymagany");
     if (empty($password)) ValidationErrorFacade::add("password", "Hasło jest wymagane");
     if (empty($repeat_password)) ValidationErrorFacade::add("repeat_password", "Powtórzenie hasła jest wymagane");
@@ -39,23 +36,28 @@ function register($email, $password, $repeat_password)
 
     $conn = require "../database.php";
 
-    $sql = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($conn, $sql);
-    $rowCount = mysqli_num_rows($result);
+    // Check if user with this email already exists
 
-    if ($rowCount > 0) {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    if ($stmt->num_rows > 0) {
         ValidationErrorFacade::add("email", "Użytkownik o tym adresie email już istnieje");
         return;
     }
 
-    $sql = "INSERT INTO users (email, password) VALUES (?, ?);";
-    $stmt = mysqli_stmt_init($conn);
-    $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-    if (!$prepareStmt) die("Internal server error.");
+    // Hash the password
 
-    mysqli_stmt_bind_param($stmt, "ss", $email, $passwordHash);
-    mysqli_stmt_execute($stmt);
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
+    // Insert user into database
+
+    $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?);");
+    $stmt->bind_param("ss", $email, $passwordHash);
+    $stmt->execute();
+
+    $id = $stmt->insert_id;
     session_start();
 
     $_SESSION['user_id'] = $id;
