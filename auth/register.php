@@ -62,6 +62,10 @@ function register($email, $password, $repeat_password)
     header('Location: ../index.php');
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    postMethod();
+}
+
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">
 <form method="POST" action="/auth/register.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
