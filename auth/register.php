@@ -2,17 +2,18 @@
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
-function postMethod()
+function register()
 {
-    if (!isset($_POST['email'])) ValidationErrorFacade::add('email', 'Email jest wymagany!');
-    if (!isset($_POST['password'])) ValidationErrorFacade::add('password', 'Hasło jest wymagane!');
+    OldInputFacade::clear();
+    ValidationErrorFacade::clear();
 
-    register($_POST['email'], $_POST['password'], $_POST['repeat_password']);
-}
+    $email = htmlspecialchars($_POST['email'], ENT_QUOTES);
+    $password = $_POST['password'];
+    $repeat_password = $_POST['repeat_password'];
 
-function register($email, $password, $repeat_password)
-{
     if (empty($email)) ValidationErrorFacade::add("email", "Email jest wymagany");
+    else OldInputFacade::add("email", $email);
+
     if (empty($password)) ValidationErrorFacade::add("password", "Hasło jest wymagane");
     if (empty($repeat_password)) ValidationErrorFacade::add("repeat_password", "Powtórzenie hasła jest wymagane");
 
@@ -40,7 +41,11 @@ function register($email, $password, $repeat_password)
     $stmt->bind_param("s", $email);
     $stmt->execute();
 
-    if ($stmt->num_rows > 0) {
+    $numRows = $stmt->get_result()->num_rows;
+
+    $stmt->close();
+
+    if ($numRows > 0) {
         ValidationErrorFacade::add("email", "Użytkownik o tym adresie email już istnieje");
         return;
     }
@@ -51,11 +56,14 @@ function register($email, $password, $repeat_password)
 
     // Insert user into database
 
-    $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?);");
+    $stmt = $conn->prepare("INSERT INTO users (email, haslo) VALUES (?, ?);");
     $stmt->bind_param("ss", $email, $passwordHash);
     $stmt->execute();
 
     $id = $stmt->insert_id;
+
+    $stmt->close();
+
     session_start();
 
     $_SESSION['user_id'] = $id;
@@ -63,13 +71,17 @@ function register($email, $password, $repeat_password)
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    postMethod();
+    register();
 }
 
 $errors = [
     'email' => ValidationErrorFacade::renderInComponent("email"),
     'password' => ValidationErrorFacade::renderInComponent("password"),
     'repeat_password' => ValidationErrorFacade::renderInComponent("repeat_password"),
+];
+
+$oldInput = [
+    'email' => OldInputFacade::get("email")
 ];
 
 $body = <<<HTML
@@ -81,7 +93,9 @@ $body = <<<HTML
         <div class="flex flex-col gap-1">
             <label for="email" class="text-lg text-neutral-300 font-semibold mx-2">Email</label>
             <input type="email" name="email" id="email"
-                   class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
+                   class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
+                   value="{$oldInput['email']}"
+                   />
             {$errors['email']}
         </div>
 
@@ -106,6 +120,9 @@ $body = <<<HTML
 </form>
 </div>
 HTML;
+
+ValidationErrorFacade::clear();
+OldInputFacade::clear();
 
 echo (new Layout($body))->render();
 ?>

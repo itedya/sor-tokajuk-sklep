@@ -5,6 +5,7 @@ loadFrontendTooling("..");
 
 function postMethod()
 {
+    OldInputFacade::clear();
     ValidationErrorFacade::clear();
 
     if (!isset($_POST['email'])) ValidationErrorFacade::add('email', 'Email jest wymagany!');
@@ -14,7 +15,12 @@ function postMethod()
         return;
     }
 
-    login($_POST['email'], $_POST['password']);
+    $email = htmlspecialchars($_POST['email'], ENT_QUOTES);
+    $password = $_POST['password'];
+
+    OldInputFacade::add("email", $email);
+
+    login($email, $password);
 }
 
 function login($email, $password)
@@ -57,6 +63,10 @@ $errors = [
     'password' => ValidationErrorFacade::renderInComponent("password"),
 ];
 
+$oldInput = [
+    'email' => OldInputFacade::get("email")
+];
+
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">
 <form method="POST" action="/auth/login.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
@@ -65,7 +75,7 @@ $body = <<<HTML
     <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
             <label for="email" class="text-lg text-neutral-300 font-semibold mx-2">Email</label>
-            <input type="email" name="email" id="email"
+            <input type="email" name="email" id="email" value="{$oldInput['email']}"
                    class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
                    {$errors['email']}
         </div>
@@ -87,6 +97,7 @@ $body = <<<HTML
 HTML;
 
 ValidationErrorFacade::clear();
+OldInputFacade::clear();
 
 echo (new Layout($body))->render();
 ?>
