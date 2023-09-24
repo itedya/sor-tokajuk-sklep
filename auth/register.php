@@ -2,8 +2,6 @@
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
-$errors = array();
-
 function postMethod()
 {
     if (!isset($_POST['email'])) ValidationErrorFacade::add('email', 'Email jest wymagany!');
@@ -89,8 +87,6 @@ $body = <<<HTML
         </div>
     </div>
 
-    <div class="flex justify - end">
-        <button class="px - 8 py - 2 bg - blue - 600 text - neutral - 200 font - semibold rounded - lg">Zarejestruj się</button>
     <div class="flex justify-end">
         <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">Zarejestruj się</button>
     </div>
