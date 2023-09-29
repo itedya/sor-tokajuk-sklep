@@ -2,9 +2,7 @@
 require_once "./frontend-tooling/autoload.php";
 loadFrontendTooling(".");
 
-session_start();
-
-$userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : "nie zalogowany";
+$userId = AuthorizationFacade::getUserId() ?? "niezalogowany";
 
 $body = <<<HTML
 <div class="flex justify-center items-center p-4">

@@ -42,12 +42,10 @@ function login($email, $password)
     $stmt->bind_result($id, $passwordFromDB);
 
     if ($stmt->fetch()) {
-        if ($passwordFromDB != $password) {
+        if (!password_verify($password, $passwordFromDB)) {
             ValidationErrorFacade::add('email', 'Dane do logowania nie zgadzają się');
             return;
         }
-
-        session_start();
 
         AuthorizationFacade::authorize($id);
         header('Location: ../index.php');
