@@ -3,6 +3,8 @@
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
+AuthorizationFacade::redirectIfAuthorized();
+
 function postMethod()
 {
     OldInputFacade::clear();
@@ -47,7 +49,7 @@ function login($email, $password)
 
         session_start();
 
-        $_SESSION['user_id'] = $id;
+        AuthorizationFacade::authorize($id);
         header('Location: ../index.php');
     } else {
         ValidationErrorFacade::add('email', 'Dane do logowania nie zgadzają się');

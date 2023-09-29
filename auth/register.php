@@ -2,6 +2,8 @@
 require_once "../frontend-tooling/autoload.php";
 loadFrontendTooling("..");
 
+AuthorizationFacade::redirectIfAuthorized();
+
 function register()
 {
     OldInputFacade::clear();
@@ -66,7 +68,7 @@ function register()
 
     session_start();
 
-    $_SESSION['user_id'] = $id;
+    AuthorizationFacade::authorize($id);
     header('Location: ../index.php');
 }
 

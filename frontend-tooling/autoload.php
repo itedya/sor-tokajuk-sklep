@@ -12,6 +12,7 @@ function loadFrontendTooling($toRoot)
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "ErrorMessage.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "ValidationErrorFacade.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "OldInputFacade.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "AuthorizationFacade.php"]);
 }
 
 if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "autoload.php")) {
