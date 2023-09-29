@@ -9,26 +9,40 @@ class AuthorizationFacade
 {
     public static function isAuthorized()
     {
+        if (session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         return isset($_SESSION['user_id']);
     }
 
     public static function authorize($id)
     {
-        session_start();
+        if (session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
 
         $_SESSION['user_id'] = $id;
     }
 
     public static function unauthorize()
     {
-        session_start();
+        if (session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
 
         unset($_SESSION['user_id']);
     }
 
     public static function getUserId()
     {
-        session_start();
+        if (session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        if (!self::isAuthorized()) {
+            return null;
+        }
 
         return $_SESSION['user_id'];
     }

@@ -7,6 +7,51 @@ if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "Navbar.php")) {
 
 class Navbar implements Component
 {
+    private $notLoggedInElements = [
+        ['href' => '/', 'text' => 'Strona główna'],
+        ['href' => '/auth/login.php', 'text' => 'Logowanie'],
+        ['href' => '/auth/register.php', 'text' => 'Rejestracja'],
+    ];
+
+    private $loggedInElements = [
+        ['href' => '/', 'text' => 'Strona główna'],
+        ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
+    ];
+
+    private function getNavbarElements()
+    {
+        $result = "";
+
+        if (AuthorizationFacade::isAuthorized()) {
+            foreach ($this->loggedInElements as $element) {
+                $result .= (new NavbarItem($element['text'], $element['href']))->render();
+            }
+        } else {
+            foreach ($this->notLoggedInElements as $element) {
+                $result .= (new NavbarItem($element['text'], $element['href']))->render();
+            }
+        }
+
+        return $result;
+    }
+
+    private function getMobileNavbarElements()
+    {
+        $result = "";
+
+        if (AuthorizationFacade::isAuthorized()) {
+            foreach ($this->loggedInElements as $element) {
+                $result .= (new MobileNavbarItem($element['text'], $element['href']))->render();
+            }
+        } else {
+            foreach ($this->notLoggedInElements as $element) {
+                $result .= (new MobileNavbarItem($element['text'], $element['href']))->render();
+            }
+        }
+
+        return $result;
+    }
+
     public function render()
     {
         return <<<HTML
@@ -16,9 +61,7 @@ class Navbar implements Component
                     <h1 class="text-3xl text-zinc-300 font-bold">Sklep</h1>
             
                     <div class="hidden md:flex flex-row">
-                        <a class="text-xl text-neutral-300 p-8 h-full" href="/">Strona główna</a>
-                        <a class="text-xl text-neutral-300 p-8 h-full" href="/auth/login.php">Logowanie</a>
-                        <a class="text-xl text-neutral-300 p-8 h-full" href="/auth/register.php">Rejestracja</a>
+                        {$this->getNavbarElements()}
                     </div>
             
                     <button class="p-2 text-zinc-100 md:hidden" id="navbarItemsTrigger">
@@ -33,12 +76,7 @@ class Navbar implements Component
             
             <div class="md:hidden">
                 <div class="fixed top-0 left-0 z-30 bg-zinc-900 mt-20 flex flex-col w-full hidden" id="navbarItems">
-                    <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800" href="/">Strona
-                        główna</a>
-                    <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800"
-                       href="/auth/login.php">Logowanie</a>
-                    <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800"
-                       href="/auth/register.php">Rejestracja</a>
+                    {$this->getMobileNavbarElements()}
                 </div>
             </div>
             

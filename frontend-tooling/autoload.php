@@ -10,6 +10,8 @@ function loadFrontendTooling($toRoot)
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "Navbar.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "Layout.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "ErrorMessage.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "MobileNavbarItem.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "components", "NavbarItem.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "ValidationErrorFacade.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "OldInputFacade.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "frontend-tooling", "facades", "AuthorizationFacade.php"]);
