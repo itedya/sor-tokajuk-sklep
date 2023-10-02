@@ -38,20 +38,19 @@ function register()
     $conn = require "../database.php";
 
     // Check if user with this email already exists
-
+    
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-
+    
     $numRows = $stmt->get_result()->num_rows;
 
     $stmt->close();
-
     if ($numRows > 0) {
         ValidationErrorFacade::add("email", "Użytkownik o tym adresie email już istnieje");
         return;
     }
-
+    
     // Hash the password
 
     $passwordHash = password_hash($password, PASSWORD_BCRYPT);
@@ -61,6 +60,25 @@ function register()
     $stmt = $conn->prepare("INSERT INTO users (email, haslo) VALUES (?, ?);");
     $stmt->bind_param("ss", $email, $passwordHash);
     $stmt->execute();
+
+
+    $key = "asiugdiayudg";
+    $emailEncrypt = openssl_encrypt($email, "AES-128-ECB", $key);
+
+    $url = 'http://localhost:8888/send-verification-email';
+    $data = ['email' => $email, 'hash' => $emailEncrypt];
+
+    // use key 'http' even if you send the request to https://...
+    $options = [
+        'http' => [
+            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => $data,
+        ],
+    ];
+
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
 
     $id = $stmt->insert_id;
 
