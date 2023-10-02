@@ -1,6 +1,6 @@
 <?php
 // Create connection
-$conn = new mysqli("localhost", "sklep", "", "sklep");
+$conn = new mysqli("localhost", "root", "", "sklep");
 
 // Check connection
 if ($conn->connect_error) {
