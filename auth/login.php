@@ -1,7 +1,9 @@
 <?php
 
 require_once "../frontend-tooling/autoload.php";
+require_once "../backend-tooling/autoload.php";
 loadFrontendTooling("..");
+loadBackendTooling("..");
 
 AuthorizationFacade::redirectIfAuthorized();
 
@@ -27,7 +29,7 @@ function postMethod()
 
 function login($email, $password)
 {
-    $conn = require "../database.php";
+    $conn = getDatabaseConnection();
     $stmt = $conn->prepare("Select id, password from users where email = ?");
 
     /* bind parameters for markers */

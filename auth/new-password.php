@@ -1,7 +1,9 @@
 <?php
 
 require_once "../frontend-tooling/autoload.php";
+require_once "../backend-tooling/autoload.php";
 loadFrontendTooling("..");
+loadBackendTooling("..");
 
 OldInputFacade::clear();
 ValidationErrorFacade::clear();

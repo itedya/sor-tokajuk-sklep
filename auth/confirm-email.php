@@ -1,14 +1,16 @@
 <?php
 
 require_once "../frontend-tooling/autoload.php";
+require_once "../backend-tooling/autoload.php";
 loadFrontendTooling("..");
+loadBackendTooling("..");
 
 $params = [];
 parse_str($_SERVER['QUERY_STRING'], $params);
 
 
 if (isset($params["hash"])) {
-    $conn = require "../database.php";
+    $conn = getDatabaseConnection();
 
     $hash = $params["hash"];
     $stmt = $conn->prepare("SELECT users.id FROM email_verification_attempts INNER JOIN users ON users.id = email_verification_attempts.user_id WHERE email_verification_attempts.hash = ?;");

@@ -2,7 +2,6 @@
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
 
 require_once "../frontend-tooling/autoload.php";
 require_once "../backend-tooling/autoload.php";
@@ -57,7 +56,7 @@ function register()
         return;
     }
 
-    $conn = require "../database.php";
+    $conn = getDatabaseConnection();
 
     // Check if user with this email already exists
     

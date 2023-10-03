@@ -9,6 +9,8 @@ function loadBackendTooling($toRoot)
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "Exception.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "SMTP.php"]);
     require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "PHPMailer.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "config", "index.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "database.php"]);
 }
 
 if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "autoload.php")) {
