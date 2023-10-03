@@ -95,8 +95,6 @@ function register()
 
     $stmt->close();
 
-    
-
     $mail = new PHPMailer(true);
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
     $mail->isSMTP();
@@ -114,12 +112,9 @@ function register()
 
     $mail->isHTML(true);
     $mail->Subject = 'Potwierdź email do konta';
-    $mail->Body    = '<a href="http://localhost/auth/confirm-password.php?hash='.$hash.'">Kliknij tutaj aby potwierdzić hasło</a>';
+    $mail->Body    = '<a href="http://localhost/auth/confirm-email.php?hash='.$hash.'">Kliknij tutaj aby potwierdzić hasło</a>';
 
     $mail->send();
-
-
-    
 
     session_start();
 
