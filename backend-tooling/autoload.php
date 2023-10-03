@@ -1,15 +1,15 @@
 <?php
 
-function loadBackendTooling($toRoot)
+function loadBackendTooling(): void
 {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
 
-    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "Exception.php"]);
-    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "SMTP.php"]);
-    require_once join(DIRECTORY_SEPARATOR, [$toRoot, "backend-tooling", "PHPMailer-master", "src", "PHPMailer.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "config", "index.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "Exception.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "SMTP.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "PHPMailer.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "database.php"]);
 }
 

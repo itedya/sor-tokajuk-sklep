@@ -1,7 +1,7 @@
 <?php
 
 require_once "./../frontend-tooling/autoload.php";
-loadFrontendTooling("..");
+loadFrontendTooling();
 
 AuthorizationFacade::redirectIfUnauthorized();
 
