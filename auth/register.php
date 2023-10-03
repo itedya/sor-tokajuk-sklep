@@ -92,6 +92,10 @@ function register()
     sendMail($email, 'Potwierdź email do konta', '<a href="http://localhost/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
 
     AuthorizationFacade::authorize($id);
+
+    if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+    $_SESSION['after_registration'] = true;
+
     header('Location: ../index.php');
 }
 
