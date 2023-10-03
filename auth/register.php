@@ -110,8 +110,18 @@ $oldInput = [
 ];
 
 $body = <<<HTML
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+    document.querySelector("#register-form").addEventListener("submit", (e) => {
+        const button = document.getElementById("register-button");
+        button.disabled = true;
+        button.innerText = "Rejestrowanie...";
+    });
+});
+</script>
+
 <div class="flex justify-center items-center p-4">
-<form method="POST" action="/auth/register.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
+<form method="POST" action="/auth/register.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl" id="register-form">
     <h1 class="text-4xl font-bold text-center text-neutral-300">Rejestracja</h1>
 
     <div class="flex flex-col gap-4">
@@ -140,7 +150,7 @@ $body = <<<HTML
     </div>
 
     <div class="flex justify-end">
-        <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">Zarejestruj się</button>
+        <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg disabled:bg-blue-400 duration-300" id="register-button" >Zarejestruj się</button>
     </div>
 </form>
 </div>
