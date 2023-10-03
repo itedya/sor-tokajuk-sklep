@@ -1,15 +1,12 @@
 <?php
 
-if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "mail.php")) {
-    http_response_code(404);
-    die();
-}
+checkIfLoadedStraightfordwardly(__FILE__);
 
 return [
-    'host' => '',
-    'port' => 0,
-    'username' => '',
-    'password' => '',
-    'from_address' => '',
-    'from_name' => ''
+    'host' => 'sandbox.smtp.mailtrap.io',
+    'port' => 465,
+    'username' => '88d15cf6eb7dee',
+    'password' => '8e6fbbf84ceef8',
+    'from_address' => 'noreply@sor-tokajuk-sklep.itedya.com',
+    'from_name' => 'Sklep'
 ];

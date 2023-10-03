@@ -1,10 +1,6 @@
 <?php
 
-if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "Layout.php")) {
-    http_response_code(404);
-    die();
-}
-
+checkIfLoadedStraightfordwardly(__FILE__);
 
 class Layout implements Component
 {

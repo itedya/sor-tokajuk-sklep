@@ -1,5 +1,15 @@
 <?php
 
+if (!function_exists('checkIfLoadedStraightfordwardly')) {
+    function checkIfLoadedStraightfordwardly($filepath): void
+    {
+        if ($_SERVER['SCRIPT_FILENAME'] === $filepath) {
+            http_response_code(404);
+            die();
+        }
+    }
+}
+
 function loadFrontendTooling(): void
 {
     ini_set('display_errors', 1);
@@ -17,7 +27,4 @@ function loadFrontendTooling(): void
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "facades", "AuthorizationFacade.php"]);
 }
 
-if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "autoload.php")) {
-    http_response_code(404);
-    die();
-}
+checkIfLoadedStraightfordwardly(__FILE__);

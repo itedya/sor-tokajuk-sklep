@@ -1,9 +1,6 @@
 <?php
 
-if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "ErrorMessage.php")) {
-    http_response_code(404);
-    die();
-}
+checkIfLoadedStraightfordwardly(__FILE__);
 
 class ErrorMessage implements Component {
     private string $message;
