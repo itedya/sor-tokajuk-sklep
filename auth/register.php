@@ -80,7 +80,8 @@ function register()
     $mail->Username   = 'abe8c5892559e7';
     $mail->Password   = 'a7a22209dff61e';
     $mail->Port       = 465;
-
+    $mail->CharSet = "UTF-8";
+    
     // Ustaw adres od kogo
     $mail->setFrom('from@example.com', 'Mailer');          
     // Ustaw adres do kogo
