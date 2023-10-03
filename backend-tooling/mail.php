@@ -1,0 +1,27 @@
+<?php
+
+if (str_ends_with(parse_url($_SERVER['REQUEST_URI'])['path'], "mail.php")) {
+    http_response_code(404);
+    die();
+}
+
+function sendMail(string $address, string $subject, string $body): void
+{
+    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host = config("mail.host");
+    $mail->SMTPAuth = true;
+    $mail->Username = config("mail.username");
+    $mail->Password = config("mail.password");
+    $mail->Port = config("mail.port");
+    $mail->CharSet = "UTF-8";
+
+    $mail->setFrom(config("mail.from_address"), config("mail.from_name"));
+    $mail->addAddress($address);
+
+    $mail->isHTML();
+    $mail->Subject = $subject;
+    $mail->Body = $body;
+
+    $mail->send();
+}

@@ -1,8 +1,5 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-
 require_once "../frontend-tooling/autoload.php";
 require_once "../backend-tooling/autoload.php";
 loadFrontendTooling();
@@ -11,36 +8,34 @@ loadBackendTooling();
 AuthorizationFacade::redirectIfAuthorized();
 
 function random_str(
-    int $length = 64,
+    int    $length = 64,
     string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-): string {
+): string
+{
     if ($length < 1) {
         throw new \RangeException("Length must be a positive integer");
     }
     $pieces = [];
     $max = mb_strlen($keyspace, '8bit') - 1;
     for ($i = 0; $i < $length; ++$i) {
-        $pieces []= $keyspace[random_int(0, $max)];
+        $pieces [] = $keyspace[random_int(0, $max)];
     }
     return implode('', $pieces);
 }
 
 function register()
 {
-    OldInputFacade::clear();
-    ValidationErrorFacade::clear();
+    if (!isset($_POST['email'])) ValidationErrorFacade::add("email", "Email jest wymagany");
+    else OldInputFacade::add("email", $_POST['email']);
+
+    if (!isset($_POST['password'])) ValidationErrorFacade::add("password", "Hasło jest wymagane");
+    if (!isset($_POST['repeat_password'])) ValidationErrorFacade::add("repeat_password", "Powtórzenie hasła jest wymagane");
+
+    if (ValidationErrorFacade::hasErrors()) return;
 
     $email = htmlspecialchars($_POST['email'], ENT_QUOTES);
     $password = $_POST['password'];
     $repeat_password = $_POST['repeat_password'];
-
-    if (empty($email)) ValidationErrorFacade::add("email", "Email jest wymagany");
-    else OldInputFacade::add("email", $email);
-
-    if (empty($password)) ValidationErrorFacade::add("password", "Hasło jest wymagane");
-    if (empty($repeat_password)) ValidationErrorFacade::add("repeat_password", "Powtórzenie hasła jest wymagane");
-
-    if (ValidationErrorFacade::hasErrors()) return;
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         ValidationErrorFacade::add("email", "Email jest niepoprawny");
@@ -59,11 +54,11 @@ function register()
     $conn = getDatabaseConnection();
 
     // Check if user with this email already exists
-    
+
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    
+
     $numRows = $stmt->get_result()->num_rows;
 
     $stmt->close();
@@ -71,7 +66,7 @@ function register()
         ValidationErrorFacade::add("email", "Użytkownik o tym adresie email już istnieje");
         return;
     }
-    
+
     // Hash the password
 
     $passwordHash = password_hash($password, PASSWORD_BCRYPT);
@@ -87,35 +82,14 @@ function register()
     $stmt->close();
 
     $hash = random_str();
-    
+
     $stmt = $conn->prepare("INSERT INTO email_verification_attempts (`user_id`, `hash`) VALUES (?, ?);");
     $stmt->bind_param("is", $id, $hash);
     $stmt->execute();
 
     $stmt->close();
 
-    $mail = new PHPMailer(true);
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
-    $mail->isSMTP();
-    $mail->Host       = 'sandbox.smtp.mailtrap.io';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'abe8c5892559e7';
-    $mail->Password   = 'a7a22209dff61e';
-    $mail->Port       = 465;
-    $mail->CharSet = "UTF-8";
-
-    // Ustaw adres od kogo
-    $mail->setFrom('from@example.com', 'Mailer');          
-    // Ustaw adres do kogo
-    $mail->addAddress('joe@example.net');
-
-    $mail->isHTML(true);
-    $mail->Subject = 'Potwierdź email do konta';
-    $mail->Body    = '<a href="http://localhost/auth/confirm-email.php?hash='.$hash.'">Kliknij tutaj aby potwierdzić hasło</a>';
-
-    $mail->send();
-
-    session_start();
+    sendMail($email, 'Potwierdź email do konta', '<a href="http://localhost/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
 
     AuthorizationFacade::authorize($id);
     header('Location: ../index.php');
