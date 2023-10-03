@@ -1,6 +1,13 @@
 <?php
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 require_once "../frontend-tooling/autoload.php";
+require_once "../backend-tooling/autoload.php";
 loadFrontendTooling("..");
+loadBackendTooling("..");
 
 AuthorizationFacade::redirectIfAuthorized();
 
@@ -65,20 +72,26 @@ function register()
     $key = "asiugdiayudg";
     $emailEncrypt = openssl_encrypt($email, "AES-128-ECB", $key);
 
-    $url = 'http://localhost:8888/send-verification-email';
-    $data = ['email' => $email, 'hash' => $emailEncrypt];
+    $mail = new PHPMailer(true);
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+    $mail->isSMTP();
+    $mail->Host       = 'sandbox.smtp.mailtrap.io';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'abe8c5892559e7';
+    $mail->Password   = 'a7a22209dff61e';
+    $mail->Port       = 465;
 
-    // use key 'http' even if you send the request to https://...
-    $options = [
-        'http' => [
-            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method' => 'POST',
-            'content' => $data,
-        ],
-    ];
+    // Ustaw adres od kogo
+    $mail->setFrom('from@example.com', 'Mailer');          
+    // Ustaw adres do kogo
+    $mail->addAddress('joe@example.net');
 
-    $context = stream_context_create($options);
-    $result = file_get_contents($url, false, $context);
+    $mail->isHTML(true);
+    $mail->Subject = 'Potwierdź email do konta';
+    $mail->Body    = '<a href="http://localhost/auth/confirm-password.php">Kliknij tutaj aby potwierdzić hasło</a>';
+
+    $mail->send();
+
 
     $id = $stmt->insert_id;
 
