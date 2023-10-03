@@ -2,12 +2,12 @@
 Options -Indexes
 
 # block files which needs to be hidden, specify .example extension of the file
-<Files ~ "\.(env|json|config.js|md|gitignore|gitattributes|lock)$">
+<Files ~ "\.(env|json|config.js|md|gitignore|gitattributes|lock|env\.example)$">
     Order allow,deny
     Deny from all
 </Files>
 
-<Files ~ "(docker-compose\.yml|database\.sql|.env.example)$">
+<Files ~ "(docker-compose\.yml|database\.sql|Dockerfile)$">
     Order allow,deny
     Deny from all
 </Files>
