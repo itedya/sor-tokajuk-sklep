@@ -11,6 +11,21 @@ loadBackendTooling("..");
 
 AuthorizationFacade::redirectIfAuthorized();
 
+function random_str(
+    int $length = 64,
+    string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+): string {
+    if ($length < 1) {
+        throw new \RangeException("Length must be a positive integer");
+    }
+    $pieces = [];
+    $max = mb_strlen($keyspace, '8bit') - 1;
+    for ($i = 0; $i < $length; ++$i) {
+        $pieces []= $keyspace[random_int(0, $max)];
+    }
+    return implode('', $pieces);
+}
+
 function register()
 {
     OldInputFacade::clear();
@@ -64,13 +79,23 @@ function register()
 
     // Insert user into database
 
-    $stmt = $conn->prepare("INSERT INTO users (email, haslo) VALUES (?, ?);");
+    $stmt = $conn->prepare("INSERT INTO users (email, `password`) VALUES (?, ?);");
     $stmt->bind_param("ss", $email, $passwordHash);
     $stmt->execute();
 
+    $id = $stmt->insert_id;
 
-    $key = "asiugdiayudg";
-    $emailEncrypt = openssl_encrypt($email, "AES-128-ECB", $key);
+    $stmt->close();
+
+    $hash = random_str();
+    
+    $stmt = $conn->prepare("INSERT INTO email_verification_attempts (`user_id`, `hash`) VALUES (?, ?);");
+    $stmt->bind_param("is", $id, $hash);
+    $stmt->execute();
+
+    $stmt->close();
+
+    
 
     $mail = new PHPMailer(true);
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;
@@ -81,7 +106,7 @@ function register()
     $mail->Password   = 'a7a22209dff61e';
     $mail->Port       = 465;
     $mail->CharSet = "UTF-8";
-    
+
     // Ustaw adres od kogo
     $mail->setFrom('from@example.com', 'Mailer');          
     // Ustaw adres do kogo
@@ -89,14 +114,12 @@ function register()
 
     $mail->isHTML(true);
     $mail->Subject = 'Potwierdź email do konta';
-    $mail->Body    = '<a href="http://localhost/auth/confirm-password.php">Kliknij tutaj aby potwierdzić hasło</a>';
+    $mail->Body    = '<a href="http://localhost/auth/confirm-password.php?hash='.$hash.'">Kliknij tutaj aby potwierdzić hasło</a>';
 
     $mail->send();
 
 
-    $id = $stmt->insert_id;
-
-    $stmt->close();
+    
 
     session_start();
 

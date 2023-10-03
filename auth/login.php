@@ -28,7 +28,7 @@ function postMethod()
 function login($email, $password)
 {
     $conn = require "../database.php";
-    $stmt = $conn->prepare("Select id, haslo from users where email = ?");
+    $stmt = $conn->prepare("Select id, password from users where email = ?");
 
     /* bind parameters for markers */
     $stmt->bind_param("s", $email);
