@@ -89,7 +89,7 @@ function register()
 
     $stmt->close();
 
-    sendMail($email, 'Potwierdź email do konta', '<a href="http://localhost/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
+    sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
 
     AuthorizationFacade::authorize($id);
 
