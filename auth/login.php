@@ -29,7 +29,7 @@ function postMethod()
 
 function login($email, $password)
 {
-    $conn = getDatabaseConnection();
+    $conn = get_db_connection();
     $stmt = $conn->prepare("Select id, password from users where email = ?");
 
     /* bind parameters for markers */

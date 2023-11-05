@@ -9,6 +9,7 @@ CREATE TABLE `users`
     CONSTRAINT pk_users_id PRIMARY KEY (`id`),
     CONSTRAINT uq_users_email UNIQUE (`email`)
 );
+
 CREATE TABLE `email_verification_attempts`
 (
     `id`      int          NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -17,4 +18,12 @@ CREATE TABLE `email_verification_attempts`
 
     CONSTRAINT UNIQUE KEY `uq_email_verification_attempts_hash` (`hash`),
     CONSTRAINT FOREIGN KEY `fk_email_verification_attempts_user_id` (`user_id`) REFERENCES `users` (`id`)
+);
+
+CREATE TABLE `password_resets`
+(
+    `uuid`    varchar(64) UNIQUE,
+    `user_id` int NOT NULL,
+
+    CONSTRAINT FOREIGN KEY `fk_passwords_resets_user_id` (`user_id`) REFERENCES `users` (`id`)
 );

@@ -51,7 +51,7 @@ function register()
         return;
     }
 
-    $conn = getDatabaseConnection();
+    $conn = get_db_connection();
 
     // Check if user with this email already exists
 

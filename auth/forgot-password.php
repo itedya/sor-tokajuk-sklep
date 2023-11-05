@@ -5,13 +5,55 @@ require_once "../backend-tooling/autoload.php";
 loadFrontendTooling();
 loadBackendTooling();
 
+auth_redirect_if_logged_in();
+
 OldInputFacade::clear();
 ValidationErrorFacade::clear();
 
-function backend()
+function backend(): void
 {
-    // TODO: Knop dokończ backend pls
-    die("Knop dokończ backend pls");
+    if (!isset($_POST['email'])) {
+        ValidationErrorFacade::add("email", "Pole email jest wymagane.");
+    } else {
+        OldInputFacade::add("email", $_POST['email']);
+    }
+
+    if (ValidationErrorFacade::hasErrors()) return;
+
+    $uuid = uniqid("pwd_reset_", true);
+    $email = $_POST['email'];
+    try {
+        db_transaction(function (mysqli $db) use ($email, $uuid) {
+            $user = db_query_row($db, "SELECT id FROM users WHERE email = ?", [
+                $email
+            ]);
+
+            if ($user === null) {
+                ValidationErrorFacade::add("email", "Użytkownik o takim emailu nie istnieje.");
+                throw new InvalidArgumentException("User with this email does not exist.");
+            }
+
+            db_execute_stmt($db, 'INSERT INTO password_resets (uuid, user_id) VALUES (?, ?)', [
+                $uuid,
+                $user['id']
+            ]);
+        });
+
+        $email = $_POST['email'];
+        $subject = "Przypomnij hasło";
+        $url = config("app.url") . "/auth/new-password.php?" . http_build_query([
+                'uuid' => base64_encode($uuid)
+            ]);
+        $html = sprintf("<a href=\"%s\">%s</a>", $url, "Przypomnij hasło");
+
+        sendMail($email, $subject, $html);
+    } catch (Exception $e) {
+        if ($e instanceof InvalidArgumentException && $e->getMessage() === "User with this email does not exist.") {
+            return;
+        }
+
+        throw $e;
+    }
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {

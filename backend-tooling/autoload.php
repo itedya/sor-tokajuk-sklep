@@ -24,6 +24,8 @@ function loadBackendTooling(): void
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "SMTP.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "PHPMailer.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "mail.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "session.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "auth.php"]);
 }
 
 checkIfLoadedStraightfordwardly(__FILE__);
