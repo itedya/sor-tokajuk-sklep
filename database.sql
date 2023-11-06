@@ -22,8 +22,10 @@ CREATE TABLE `email_verification_attempts`
 
 CREATE TABLE `password_resets`
 (
-    `uuid`    varchar(64) UNIQUE,
-    `user_id` int NOT NULL,
+    `uuid`                 varchar(64),
+    `user_id`              int          NOT NULL,
+    `created_at_timestamp` int unsigned NOT NULL,
 
-    CONSTRAINT FOREIGN KEY `fk_passwords_resets_user_id` (`user_id`) REFERENCES `users` (`id`)
+    CONSTRAINT PRIMARY KEY `pk_password_resets_uuid` (`uuid`),
+    CONSTRAINT FOREIGN KEY `fk_password_resets_user_id` (`user_id`) REFERENCES `users` (`id`)
 );

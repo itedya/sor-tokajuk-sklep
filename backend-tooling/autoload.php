@@ -20,12 +20,16 @@ function loadBackendTooling(): void
 
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "database.php"]);
 
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "abort.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "session.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "auth.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "get_query_params.php"]);
+    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "redirect_and_kill.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "Exception.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "SMTP.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "PHPMailer-master", "src", "PHPMailer.php"]);
     require_once join(DIRECTORY_SEPARATOR, [__DIR__, "mail.php"]);
-    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "session.php"]);
-    require_once join(DIRECTORY_SEPARATOR, [__DIR__, "auth.php"]);
+
 }
 
 checkIfLoadedStraightfordwardly(__FILE__);

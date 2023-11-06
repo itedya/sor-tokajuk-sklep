@@ -33,9 +33,10 @@ function backend(): void
                 throw new InvalidArgumentException("User with this email does not exist.");
             }
 
-            db_execute_stmt($db, 'INSERT INTO password_resets (uuid, user_id) VALUES (?, ?)', [
+            db_execute_stmt($db, 'INSERT INTO password_resets (uuid, user_id, created_at_timestamp) VALUES (?, ?, ?)', [
                 $uuid,
-                $user['id']
+                $user['id'],
+                time()
             ]);
         });
 
