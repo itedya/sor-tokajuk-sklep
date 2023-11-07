@@ -1,13 +1,6 @@
 <?php
 
-use components\Layout;
-use facades\OldInputFacade;
-use facades\ValidationErrorFacade;
-
-require_once "../frontend-tooling/autoload.php";
-require_once "../tooling/autoload.php";
-loadFrontendTooling();
-loadBackendTooling();
+require_once '../tooling/autoload.php';
 
 auth_redirect_if_logged_in();
 

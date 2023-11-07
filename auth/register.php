@@ -1,14 +1,6 @@
 <?php
 
-use components\Layout;
-use facades\AuthorizationFacade;
-use facades\OldInputFacade;
-use facades\ValidationErrorFacade;
-
-require_once "../frontend-tooling/autoload.php";
-require_once "../tooling/autoload.php";
-loadFrontendTooling();
-loadBackendTooling();
+require_once '../tooling/autoload.php';
 
 AuthorizationFacade::redirectIfAuthorized();
 

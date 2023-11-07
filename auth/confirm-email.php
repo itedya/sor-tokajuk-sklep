@@ -1,11 +1,6 @@
 <?php
 
-use components\Layout;
-
-require_once "../frontend-tooling/autoload.php";
-require_once "../tooling/autoload.php";
-loadFrontendTooling();
-loadBackendTooling();
+require_once '../tooling/autoload.php';
 
 $params = [];
 parse_str($_SERVER['QUERY_STRING'], $params);

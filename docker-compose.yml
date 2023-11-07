@@ -10,7 +10,7 @@ services:
 
   database:
     container_name: sor-tokajuk-sklep.database
-    image: mysql:8.0
+    image: mysql/mysql-server:8.0
     restart: unless-stopped
     ports:
       - 8003:3306
