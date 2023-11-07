@@ -1,4 +1,8 @@
 <?php
+
+use components\Layout;
+use facades\AuthorizationFacade;
+
 require_once "./frontend-tooling/autoload.php";
 loadFrontendTooling(".");
 

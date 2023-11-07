@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 return [
     'host' => $_ENV['DATABASE_HOST'],
     'username' => $_ENV['DATABASE_USERNAME'],

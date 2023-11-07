@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 foreach (file(join(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '.env'])) as $line) {
     $items = explode('=', $line);
     $key = trim($items[0]);

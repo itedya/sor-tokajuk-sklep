@@ -1,13 +1,12 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 class MobileNavbarItem implements Component
 {
     public function __construct(
         private string $text,
         private string $href,
-    ) {
+    )
+    {
     }
 
     public function render()

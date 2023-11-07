@@ -1,9 +1,9 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
-class ErrorMessage implements Component {
+class ErrorMessage implements Component
+{
     private string $message;
+
     public function __construct(string $message)
     {
         $this->message = $message;

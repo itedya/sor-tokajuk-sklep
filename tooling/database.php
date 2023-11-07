@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 function get_db_connection()
 {
     $conn = new mysqli(config("database.host"), config("database.username"), config("database.password"), config("database.database"));

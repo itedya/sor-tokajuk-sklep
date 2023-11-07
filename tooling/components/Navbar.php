@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 class Navbar implements Component
 {
     private $notLoggedInElements = [

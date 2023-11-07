@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 return [
     'host' => $_ENV['MAIL_HOST'],
     'port' => intval($_ENV['MAIL_PORT']),

@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 class AuthorizationFacade
 {
     public static function isAuthorized()
@@ -52,7 +50,8 @@ class AuthorizationFacade
         }
     }
 
-    public static function redirectIfAuthorized() {
+    public static function redirectIfAuthorized()
+    {
         if (self::isAuthorized()) {
             header('Location: /index.php');
             die();

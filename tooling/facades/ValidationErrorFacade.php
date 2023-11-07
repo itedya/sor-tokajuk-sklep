@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 class ValidationErrorFacade
 {
     private static function start_session()

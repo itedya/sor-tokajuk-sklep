@@ -1,6 +1,9 @@
 <?php
+
+use components\Layout;
+
 require_once "../frontend-tooling/autoload.php";
-require_once "../backend-tooling/autoload.php";
+require_once "../tooling/autoload.php";
 loadFrontendTooling();
 loadBackendTooling();
 

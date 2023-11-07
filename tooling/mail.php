@@ -1,7 +1,5 @@
 <?php
 
-checkIfLoadedStraightfordwardly(__FILE__);
-
 function sendMail(string $address, string $subject, string $body): void
 {
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
