@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     old_input_add("email", $email);
 
     $db = get_db_connection();
-    $data = db_query_row("SELECT id, password FROM users WHERE email = ?");
+    $data = db_query_row($db, "SELECT id, password FROM users WHERE email = ?", [$email]);
 
     if ($data === null) {
         validation_errors_add("email", "Dane do logowanie nie zgadzają się.");
