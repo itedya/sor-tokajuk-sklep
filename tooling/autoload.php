@@ -25,4 +25,20 @@ require_once __DIR__ . "/components/render_in_layout.php";
 require_once __DIR__ . "/components/render_navbar.php";
 require_once __DIR__ . "/components/render_textfield.php";
 
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+});
+
+set_exception_handler(function (Throwable $e) {
+    while (count(ob_list_handlers()) > 0) {
+        ob_end_clean();
+    }
+
+    http_response_code(500);
+    header("Content-Type: text/plain");
+    echo "Message: " . $e->getMessage() . PHP_EOL;
+    echo "Code: " . $e->getCode() . PHP_EOL;
+    echo "Stack trace: " . $e->getTraceAsString() . PHP_EOL ;
+});
+
 session_initialize();
