@@ -7,6 +7,8 @@ services:
       - 8002:80
     volumes:
       - ./:/var/www/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   database:
     container_name: sor-tokajuk-sklep.database
