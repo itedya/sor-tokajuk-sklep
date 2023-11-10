@@ -6,28 +6,31 @@ gate_redirect_if_logged_in();
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if (!isset($_POST['email'])) validation_errors_add("email", "Email jest wymagany");
-    else validation_errors_add("email", $_POST['email']);
-
     if (!isset($_POST['password'])) validation_errors_add("password", "Hasło jest wymagane");
     if (!isset($_POST['repeat_password'])) validation_errors_add("repeat_password", "Powtórzenie hasła jest wymagane");
 
-    if (!validation_errors_is_empty()) return;
+    if (!validation_errors_is_empty()) {
+        redirect_and_kill("register.php");
+    }
 
     $email = $_POST['email'];
     $password = $_POST['password'];
     $repeat_password = $_POST['repeat_password'];
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        validation_errors_add("email", "Email jest niepoprawny");
-    }
+    old_input_add("email", $email);
 
-    if (strlen($password) < 8) {
-        validation_errors_add("password", "Hasło musi mieć co najmniej 8 znaków");
-    }
+    // validate email
+    $emailError = validate_email($email);
+    if ($emailError !== null) validation_errors_add("email", $emailError);
 
-    if ($password !== $repeat_password) {
-        validation_errors_add("repeat_password", "Hasła muszą być takie same");
-    }
+    // validate password
+    $passwordError = validate_password($password);
+    if ($passwordError !== null) validation_errors_add("password", $passwordError);
+
+    if (!validation_errors_is_empty()) redirect_and_kill("register.php");
+
+    // make sure password and repeat password are the same
+    if ($password !== $repeat_password) validation_errors_add("repeat_password", "Hasła muszą być takie same");
 
     if (!validation_errors_is_empty()) redirect_and_kill("register.php");
 
@@ -53,10 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
 
-    auth_login($id);
-
     session_flash('after_registration', true);
-    redirect_and_kill("../index.php");
+    redirect_and_kill(config("app.url") . "/auth/after-registration.php");
 }
 
 echo render_in_layout(function () { ?>
@@ -76,14 +77,15 @@ echo render_in_layout(function () { ?>
             <h1 class="text-4xl font-bold text-center text-neutral-300">Rejestracja</h1>
 
             <div class="flex flex-col gap-4">
-                <?= render_textfield(label: "Email", type: 'email', name: 'email') ?>
+                <?= render_textfield(label: "Email", type: 'text', name: 'email') ?>
                 <?= render_textfield(label: "Hasło", type: 'password', name: 'password') ?>
-                <?= render_textfield(label: "Powtórz hasło", type: 'repeat_password', name: 'repeat_password') ?>
+                <?= render_textfield(label: "Powtórz hasło", type: 'password', name: 'repeat_password') ?>
             </div>
 
             <div class="flex justify-end">
                 <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg disabled:bg-blue-400 duration-300"
-                        id="register-button">Zarejestruj się
+                        id="register-button">
+                    Zarejestruj się
                 </button>
             </div>
         </form>

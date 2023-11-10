@@ -13,6 +13,7 @@ require_once __DIR__ . "/helper_functions/mail.php";
 require_once __DIR__ . "/helper_functions/old_input.php";
 require_once __DIR__ . "/helper_functions/redirect_and_kill.php";
 require_once __DIR__ . "/helper_functions/session.php";
+require_once __DIR__ . "/helper_functions/validation.php";
 require_once __DIR__ . "/helper_functions/validation_errors.php";
 
 require_once __DIR__ . "/config/index.php";
