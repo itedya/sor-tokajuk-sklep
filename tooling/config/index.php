@@ -1,6 +1,6 @@
 <?php
 
-foreach (file(join(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '.env'])) as $line) {
+foreach (file(__DIR__ . '/../../.env') as $line) {
     $items = explode('=', $line);
     $key = trim($items[0]);
     $value = trim(join("=", array_slice($items, 1)));
@@ -11,7 +11,7 @@ foreach (file(join(DIRECTORY_SEPARATOR, [__DIR__, '..', '..', '.env'])) as $line
 function config(string $path)
 {
     $pathParts = explode(".", $path);
-    $config = require join(DIRECTORY_SEPARATOR, [__DIR__, $pathParts[0] . ".php"]);
+    $config = require __DIR__ . "/{$pathParts[0]}.php";
 
     return $config[$pathParts[1]];
 }
