@@ -2,163 +2,90 @@
 
 require_once '../tooling/autoload.php';
 
-AuthorizationFacade::redirectIfAuthorized();
+gate_redirect_if_logged_in();
 
-function random_str(
-    int    $length = 64,
-    string $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-): string
-{
-    if ($length < 1) {
-        throw new \RangeException("Length must be a positive integer");
-    }
-    $pieces = [];
-    $max = mb_strlen($keyspace, '8bit') - 1;
-    for ($i = 0; $i < $length; ++$i) {
-        $pieces [] = $keyspace[random_int(0, $max)];
-    }
-    return implode('', $pieces);
-}
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    if (!isset($_POST['email'])) validation_errors_add("email", "Email jest wymagany");
+    else validation_errors_add("email", $_POST['email']);
 
-function register()
-{
-    if (!isset($_POST['email'])) ValidationErrorFacade::add("email", "Email jest wymagany");
-    else OldInputFacade::add("email", $_POST['email']);
+    if (!isset($_POST['password'])) validation_errors_add("password", "Hasło jest wymagane");
+    if (!isset($_POST['repeat_password'])) validation_errors_add("repeat_password", "Powtórzenie hasła jest wymagane");
 
-    if (!isset($_POST['password'])) ValidationErrorFacade::add("password", "Hasło jest wymagane");
-    if (!isset($_POST['repeat_password'])) ValidationErrorFacade::add("repeat_password", "Powtórzenie hasła jest wymagane");
+    if (!validation_errors_is_empty()) return;
 
-    if (ValidationErrorFacade::hasErrors()) return;
-
-    $email = htmlspecialchars($_POST['email'], ENT_QUOTES);
+    $email = $_POST['email'];
     $password = $_POST['password'];
     $repeat_password = $_POST['repeat_password'];
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        ValidationErrorFacade::add("email", "Email jest niepoprawny");
-        return;
+        validation_errors_add("email", "Email jest niepoprawny");
     }
 
     if (strlen($password) < 8) {
-        ValidationErrorFacade::add("password", "Hasło musi mieć co najmniej 8 znaków");
-        return;
+        validation_errors_add("password", "Hasło musi mieć co najmniej 8 znaków");
     }
+
     if ($password !== $repeat_password) {
-        ValidationErrorFacade::add("repeat_password", "Hasła muszą być takie same");
-        return;
+        validation_errors_add("repeat_password", "Hasła muszą być takie same");
     }
 
-    $conn = get_db_connection();
+    if (!validation_errors_is_empty()) redirect_and_kill("register.php");
 
-    // Check if user with this email already exists
+    db_transaction(function (mysqli $db) use ($email, $password, &$id, &$hash) {
+        $row = db_query_row($db, "SELECT * FROM users WHERE email = ?", [$email]);
+        if ($row !== null) {
+            validation_errors_add("email", "Użytkownik o tym adresie email już istnieje.");
+            redirect_and_kill("register.php");
+        }
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
+        // Hash the password
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
-    $numRows = $stmt->get_result()->num_rows;
+        $stmt = db_execute_stmt($db, "INSERT INTO users (email, `password`) VALUES (?, ?);", [$email, $passwordHash]);
+        $id = $stmt->insert_id;
+        $stmt->close();
 
-    $stmt->close();
-    if ($numRows > 0) {
-        ValidationErrorFacade::add("email", "Użytkownik o tym adresie email już istnieje");
-        return;
-    }
+        $hash = uniqid("email_verification_");
 
-    // Hash the password
-
-    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-
-    // Insert user into database
-
-    $stmt = $conn->prepare("INSERT INTO users (email, `password`) VALUES (?, ?);");
-    $stmt->bind_param("ss", $email, $passwordHash);
-    $stmt->execute();
-
-    $id = $stmt->insert_id;
-
-    $stmt->close();
-
-    $hash = random_str();
-
-    $stmt = $conn->prepare("INSERT INTO email_verification_attempts (`user_id`, `hash`) VALUES (?, ?);");
-    $stmt->bind_param("is", $id, $hash);
-    $stmt->execute();
-
-    $stmt->close();
+        $stmt = db_execute_stmt($db, "INSERT INTO email_verification_attempts (`user_id`, `hash`) VALUES (?, ?);", [$id, $hash]);
+        $stmt->close();
+    });
 
     sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
 
-    AuthorizationFacade::authorize($id);
+    auth_login($id);
 
-    if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-    $_SESSION['after_registration'] = true;
-
-    header('Location: ../index.php');
+    session_flash('after_registration', true);
+    redirect_and_kill("../index.php");
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    register();
-}
+echo render_in_layout(function () { ?>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            document.querySelector("#register-form").addEventListener("submit", (e) => {
+                const button = document.getElementById("register-button");
+                button.disabled = true;
+                button.innerText = "Rejestrowanie...";
+            });
+        });
+    </script>
 
-$errors = [
-    'email' => ValidationErrorFacade::renderInComponent("email"),
-    'password' => ValidationErrorFacade::renderInComponent("password"),
-    'repeat_password' => ValidationErrorFacade::renderInComponent("repeat_password"),
-];
+    <div class="flex justify-center items-center p-4">
+        <form method="POST" action="/auth/register.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl"
+              id="register-form">
+            <h1 class="text-4xl font-bold text-center text-neutral-300">Rejestracja</h1>
 
-$oldInput = [
-    'email' => OldInputFacade::get("email")
-];
+            <div class="flex flex-col gap-4">
+                <?= render_textfield(label: "Email", type: 'email', name: 'email') ?>
+                <?= render_textfield(label: "Hasło", type: 'password', name: 'password') ?>
+                <?= render_textfield(label: "Powtórz hasło", type: 'repeat_password', name: 'repeat_password') ?>
+            </div>
 
-$body = <<<HTML
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-    document.querySelector("#register-form").addEventListener("submit", (e) => {
-        const button = document.getElementById("register-button");
-        button.disabled = true;
-        button.innerText = "Rejestrowanie...";
-    });
-});
-</script>
-
-<div class="flex justify-center items-center p-4">
-<form method="POST" action="/auth/register.php" class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl" id="register-form">
-    <h1 class="text-4xl font-bold text-center text-neutral-300">Rejestracja</h1>
-
-    <div class="flex flex-col gap-4">
-        <div class="flex flex-col gap-1">
-            <label for="email" class="text-lg text-neutral-300 font-semibold mx-2">Email</label>
-            <input type="email" name="email" id="email"
-                   class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
-                   value="{$oldInput['email']}"
-                   />
-            {$errors['email']}
-        </div>
-
-        <div class="flex flex-col gap-1">
-            <label for="password" class="text-lg text-neutral-300 font-semibold mx-2">Hasło</label>
-            <input type="password" name="password" id="password"
-                   class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
-            {$errors['password']}
-        </div>
-
-        <div class="flex flex-col gap-1">
-            <label for="password" class="text-lg text-neutral-300 font-semibold mx-2">Powtórz hasło</label>
-            <input type="password" name="repeat_password" id="repeat_password"
-                   class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"/>
-            {$errors['repeat_password']}
-        </div>
+            <div class="flex justify-end">
+                <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg disabled:bg-blue-400 duration-300"
+                        id="register-button">Zarejestruj się
+                </button>
+            </div>
+        </form>
     </div>
-
-    <div class="flex justify-end">
-        <button class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg disabled:bg-blue-400 duration-300" id="register-button" >Zarejestruj się</button>
-    </div>
-</form>
-</div>
-HTML;
-
-ValidationErrorFacade::clear();
-OldInputFacade::clear();
-
-echo (new Layout($body))->render();
-?>
+<?php });

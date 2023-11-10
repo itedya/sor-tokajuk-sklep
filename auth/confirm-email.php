@@ -2,14 +2,12 @@
 
 require_once '../tooling/autoload.php';
 
-$params = [];
-parse_str($_SERVER['QUERY_STRING'], $params);
+gate_redirect_if_logged_in();
 
-
-if (isset($params["hash"])) {
+if (get_query_param('hash') !== null) {
     $conn = get_db_connection();
 
-    $hash = $params["hash"];
+    $hash = get_query_param('hash');
     $stmt = $conn->prepare("SELECT users.id FROM email_verification_attempts INNER JOIN users ON users.id = email_verification_attempts.user_id WHERE email_verification_attempts.hash = ?;");
     $stmt->bind_param("s", $hash);
     $stmt->execute();
@@ -20,8 +18,7 @@ if (isset($params["hash"])) {
     $stmt->close();
 
     if ($row === null) {
-        header("Location: ../index.php");
-        die();
+        redirect_and_kill("../index.php");
     }
 
     $stmt = $conn->prepare("DELETE FROM email_verification_attempts WHERE hash = ?;");
@@ -36,15 +33,12 @@ if (isset($params["hash"])) {
 
     $stmt->close();
 } else {
-    header("Location: ../index.php");
-    die();
+    redirect_and_kill("../index.php");
 }
 
-$body = <<<HTML
-<div class="flex flex-col justify-center items-center p-4 gap-3">
-    <h1 class="text-3xl text-zinc-300">Twój email został zweryfikowany</h1>
-    <a class="text-xl text-blue-200" href="../index.php">Powrót do strony głównej</a>
-</div>
-HTML;
-
-echo (new Layout($body))->render();
+echo render_in_layout(function () { ?>
+    <div class="flex flex-col justify-center items-center p-4 gap-3">
+        <h1 class="text-3xl text-zinc-300">Twój email został zweryfikowany</h1>
+        <a class="text-xl text-blue-200" href="../index.php">Powrót do strony głównej</a>
+    </div>
+<?php });

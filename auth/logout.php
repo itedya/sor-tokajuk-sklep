@@ -2,7 +2,6 @@
 
 require_once '../tooling/autoload.php';
 
-AuthorizationFacade::redirectIfUnauthorized();
+gate_redirect_if_unauthorized();
 
-AuthorizationFacade::unauthorize();
-header("Location: ../index.php");
+redirect_and_kill("../index.php");

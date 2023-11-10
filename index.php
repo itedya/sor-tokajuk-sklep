@@ -2,31 +2,29 @@
 
 require_once './tooling/autoload.php';
 
-$userId = AuthorizationFacade::getUserId() ?? "niezalogowany";
+$userId = auth_get_user_id();
 
-function afterRegistrationMessage(): string
+function isAfterRegistration(): string
 {
     if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
-    if (!isset($_SESSION['after_registration'])) return "";
+    if (!isset($_SESSION['after_registration'])) return false;
 
     unset($_SESSION['after_registration']);
 
-    return <<<HTML
+    return true;
+}
+
+if (isAfterRegistration()) {
+    echo render_in_layout(function () { ?>
         <div class="text-xl bg-green-800 text-zinc-300 p-4 rounded-xl">
             Zarejestrowano pomyślnie, musisz teraz potwierdzić maila.
         </div>
-    HTML;
+    <?php });
+} else {
+    echo render_in_layout(function () use ($userId) { ?>
+        Strona główna <?= $userId ?>
+    <?php });
 }
 
-$message = afterRegistrationMessage();
-
-$body = <<<HTML
-<div class="flex flex-col justify-center items-center p-4 gap-4">
-{$message}
-    <h1 class="text-3xl text-zinc-300">Strona główna $userId</h1>
-</div>
-HTML;
-
-echo (new Layout($body))->render();
 ?>
