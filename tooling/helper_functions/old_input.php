@@ -2,11 +2,11 @@
 
 function old_input_add(string $key, mixed $data): void
 {
-    $data = session_get('__old_input', []);
+    $allData = session_get('__old_input', []);
 
-    $data[$key] = $data;
+    $allData[$key] = $data;
 
-    session_flash('__old_input', $data);
+    session_flash('__old_input', $allData);
 }
 
 function old_input_has(string $index): bool

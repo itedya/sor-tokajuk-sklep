@@ -11,7 +11,7 @@ function render_textfield(string           $label,
     if ($id === null) $id = uniqid("input_");
 
     if ($oldInput !== false && gettype($validationError) !== "string") {
-        $oldInput = old_input_has($name) ? old_input_get($oldInput) : "";
+        $oldInput = old_input_has($name) ? old_input_get($name) : "";
     }
 
     if ($validationError !== false && gettype($validationError) !== "string") {
@@ -39,5 +39,5 @@ function render_textfield(string           $label,
         <?= $validationError ?>
     </div>
     <?php
-    return ob_end_clean();
+    return ob_get_clean();
 }
