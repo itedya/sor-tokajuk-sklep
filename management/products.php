@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../tooling/autoload.php';
 
 gate_redirect_if_unauthorized();
-// TODO: Kuba zabezpiecz - jeżeli nie jest adminem, to go przekierowuje do strony głównej
+gate_redirect_if_not_an_admin();
 
 $products = [
     [
@@ -178,4 +178,3 @@ echo render_in_layout(function () use ($products) { ?>
         </div>
     </div>
 <?php });
-

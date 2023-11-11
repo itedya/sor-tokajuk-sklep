@@ -18,3 +18,18 @@ function auth_get_user_id(): ?int
 {
     return session_get('logged_in_user_id');
 }
+
+function auth_is_admin(): bool
+{
+    if (!auth_is_logged_in()) return false;
+
+    $userId = auth_get_user_id();
+
+    db_transaction(function (mysqli $db) use ($userId, &$isAdmin) {
+        $user = db_query_row($db, "SELECT * FROM users WHERE id = ?", [$userId]);
+
+        $isAdmin = $user['is_admin'];
+    });
+
+    return $isAdmin;
+}
