@@ -7,6 +7,7 @@ function render_navbar()
     if (auth_is_logged_in()) {
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
+            ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
             ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
         ];
     } else {
@@ -22,7 +23,7 @@ function render_navbar()
     <div>
         <div class="fixed top-0 left-0 w-full bg-zinc-900 p-4 md:p-0 border-b border-zinc-700 shadow h-20 md:h-auto flex justify-center items-center z-40">
             <div class="container flex flex-row justify-between items-center h-full px-8">
-                <h1 class="text-3xl text-zinc-300 font-bold">Sklep</h1>
+                <h1 class="text-3xl text-zinc-300 font-bold">TrumniX</h1>
 
                 <div class="hidden md:flex flex-row">
                     <?php foreach ($elements as $element): ?>
