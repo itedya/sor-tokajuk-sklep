@@ -43,4 +43,3 @@ set_exception_handler(function (Throwable $e) {
 });
 
 session_initialize();
-last_get_request_path_initialize();
