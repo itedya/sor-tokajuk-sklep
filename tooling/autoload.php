@@ -39,7 +39,8 @@ set_exception_handler(function (Throwable $e) {
     header("Content-Type: text/plain");
     echo "Message: " . $e->getMessage() . PHP_EOL;
     echo "Code: " . $e->getCode() . PHP_EOL;
-    echo "Stack trace: " . $e->getTraceAsString() . PHP_EOL ;
+    echo "Stack trace: " . $e->getTraceAsString() . PHP_EOL;
 });
 
 session_initialize();
+last_get_request_path_initialize();
