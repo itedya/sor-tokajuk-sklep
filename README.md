@@ -1,8 +1,8 @@
 # Projekt sklepu internetowego
 
-**Wersja PHP**: 8.1.x  
-**Wersja MySQL**: 8.x  
-**Proponowana wersja XAMPP:** 8.1.17
+**Wersja PHP**: 8.2.10
+**Wersja MySQL**: 8.0
+**Proponowana wersja XAMPP:** 8.2.4 (lub wyżej)
 
 ## Testy manualne
 
