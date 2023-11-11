@@ -11,7 +11,8 @@ function get_db_connection()
     return $conn;
 }
 
-function db_transaction(callable $callback, ?callable $catchCallback = null) {
+function db_transaction(callable $callback, ?callable $catchCallback = null)
+{
     $db = get_db_connection();
 
     try {
@@ -26,7 +27,8 @@ function db_transaction(callable $callback, ?callable $catchCallback = null) {
     }
 }
 
-function db_execute_stmt(mysqli $db, string $query, array $parameters): mysqli_stmt {
+function db_execute_stmt(mysqli $db, string $query, array $parameters): mysqli_stmt
+{
     $stmt = $db->prepare($query);
 
     $types = "";
@@ -35,14 +37,16 @@ function db_execute_stmt(mysqli $db, string $query, array $parameters): mysqli_s
         $type = match (gettype($parameterValue)) {
             "string" => "s",
             "integer" => "i",
-            "double" => "d",
+            "double", "boolean" => "d",
             default => throw new Exception("Nieznany typ zmiennej, dodaj taki: " . gettype($parameterValue))
         };
 
         $types .= $type;
     }
 
-    $stmt->bind_param($types, ...array_values($parameters));
+    if (count($parameters) !== 0) {
+        $stmt->bind_param($types, ...array_values($parameters));
+    }
 
     $stmt->execute();
 
@@ -75,4 +79,54 @@ function db_query_row(mysqli $db, string $query, array $parameters): array|null
     $stmt->close();
 
     return $returnedValue;
+}
+
+function db_migrate(mysqli $db): void
+{
+    $sql = file_get_contents(__DIR__ . '/../../database.sql');
+
+    $queries = explode(";", $sql);
+    $queries = array_filter($queries, fn($query) => $query !== "");
+
+    foreach ($queries as $query) {
+        db_execute_stmt($db, $query, []);
+    }
+}
+
+function db_drop(mysqli $db): void
+{
+    $selectDropsSQL = <<<SQL
+    SELECT CONCAT('DROP TABLE IF EXISTS `', table_name, '`;') as text
+    FROM information_schema.tables
+    WHERE table_schema = ?;
+SQL;
+
+
+    $queries = db_query_rows($db, $selectDropsSQL, [config("database.database")]);
+    $queries = array_map(fn($q) => $q['text'], $queries);
+
+    db_execute_stmt($db, "SET FOREIGN_KEY_CHECKS = 0;", []);
+
+    foreach ($queries as $query) {
+        db_execute_stmt($db, $query, []);
+    }
+
+    db_execute_stmt($db, "SET FOREIGN_KEY_CHECKS = 1;", []);
+}
+
+function db_seed(mysqli $db): void
+{
+    $users = require __DIR__ . '/../seeding/users-data.php';
+    foreach ($users as $user) {
+        db_execute_stmt(
+            $db,
+            "INSERT INTO users (id, email, password, is_verified, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            array_values($user)
+        );
+    }
+
+    $products = require __DIR__ . '/../seeding/products-data.php';
+    foreach ($products as $product) {
+        db_execute_stmt($db, "INSERT INTO products (id, name, description, price) VALUES (?, ?, ?, ?)", array_values($product));
+    }
 }
