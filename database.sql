@@ -41,3 +41,15 @@ CREATE TABLE `products`
 
     CONSTRAINT pk_products_id PRIMARY KEY (`id`)
 );
+
+CREATE TABLE `products_images`
+(
+    `id`         int          NOT NULL AUTO_INCREMENT,
+    `product_id` int          NOT NULL,
+    `image`      varchar(255) NOT NULL,
+    `created_at` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT pk_products_images_id PRIMARY KEY (`id`),
+    CONSTRAINT FOREIGN KEY `fk_products_images_product_id` (`product_id`) REFERENCES `products` (`id`),
+    CONSTRAINT UNIQUE KEY `uq_products_images_image` (`image`)
+);

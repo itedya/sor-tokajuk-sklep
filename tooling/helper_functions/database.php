@@ -129,4 +129,17 @@ function db_seed(mysqli $db): void
     foreach ($products as $product) {
         db_execute_stmt($db, "INSERT INTO products (id, name, description, price) VALUES (?, ?, ?, ?)", array_values($product));
     }
+
+    $productsImages = require __DIR__ . '/../seeding/products-images-data.php';
+
+    foreach ($productsImages as $productImage) {
+        $productImageName = uniqid("product_image_") . ".png";
+
+        file_put_contents(__DIR__ . "/../../images/" . $productImageName, $productImage['image']);
+
+        db_execute_stmt($db,
+            "INSERT INTO products_images (id, product_id, image, created_at) VALUES (?, ?, ?, ?)",
+            [$productImage['id'], $productImage['product_id'], $productImageName, $productImage['created_at']]
+        );
+    }
 }
