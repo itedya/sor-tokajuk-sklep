@@ -114,7 +114,7 @@ echo render_in_layout(function () use ($products) { ?>
         }
     </style>
 
-    <div class="container mx-auto p-4">
+    <div class="container mx-auto p-4 gap-8 flex flex-col">
         <div class="text-3xl text-center text-neutral-300 p-4">
             Produkty
         </div>
@@ -137,7 +137,7 @@ echo render_in_layout(function () use ($products) { ?>
                         </a>
                     </div>
                 </div>
-            <?php endforeach; ?>add real db select in products management page
+            <?php endforeach; ?>
         </div>
     </div>
 <?php });
