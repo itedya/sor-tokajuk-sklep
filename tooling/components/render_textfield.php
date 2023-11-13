@@ -29,15 +29,29 @@ function render_textfield(string           $label,
     $oldInput = htmlspecialchars($oldInput);
 
     ob_start();
-    ?>
-    <div class="flex flex-col gap-1">
-        <label for="<?= $id ?>" class="text-lg text-neutral-300 font-semibold mx-2"><?= $label ?></label>
-        <input type="<?= $type ?>" name="<?= $name ?>" id="<?= $id ?>"
-               class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
-               value="<?= $oldInput ?>"
-        />
-        <?= $validationError ?>
-    </div>
-    <?php
+
+    if ($type !== "textarea") {
+        ?>
+        <div class="flex flex-col gap-1 w-full">
+            <label for="<?= $id ?>" class="text-lg text-neutral-300 font-semibold mx-2"><?= $label ?></label>
+            <input type="<?= $type ?>" name="<?= $name ?>" id="<?= $id ?>"
+                   class="p-4 w-full bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
+                   value="<?= $oldInput ?>"
+            />
+            <?= $validationError ?>
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="flex flex-col gap-1 w-full">
+            <label for="<?= $id ?>" class="text-lg text-neutral-300 font-semibold mx-2"><?= $label ?></label>
+            <textarea name="<?= $name ?>" id="<?= $id ?>"
+                      class="p-4 bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
+            ><?= $oldInput ?></textarea>
+            <?= $validationError ?>
+        </div>
+        <?php
+    }
+
     return ob_get_clean();
 }

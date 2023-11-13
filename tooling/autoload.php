@@ -25,6 +25,7 @@ require_once __DIR__ . "/PHPMailer-master/src/PHPMailer.php";
 require_once __DIR__ . "/components/render_in_layout.php";
 require_once __DIR__ . "/components/render_navbar.php";
 require_once __DIR__ . "/components/render_textfield.php";
+require_once __DIR__ . "/components/render_select.php";
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
