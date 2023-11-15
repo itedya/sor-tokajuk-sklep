@@ -5,7 +5,22 @@ require_once __DIR__ . '/../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
-$products = db_query_rows(get_db_connection(), "SELECT * FROM products", []);
+$sql = <<<SQL
+SELECT products.*, pi.image FROM products
+LEFT JOIN (
+    SELECT id, product_id, image
+    FROM products_images pi1
+    WHERE id = (
+        SELECT id
+        FROM products_images pi2
+        WHERE pi1.product_id = pi2.product_id
+        ORDER BY pi2.id
+        LIMIT 1
+    )
+) pi ON pi.product_id = products.id
+SQL;
+
+$products = db_query_rows(get_db_connection(), $sql, []);
 
 echo render_in_layout(function () use ($products) { ?>
     <style type="text/tailwindcss">
@@ -122,17 +137,21 @@ echo render_in_layout(function () use ($products) { ?>
         <div class="grid grid-cols-1 auto-grid-rows gap-8 xl:grid-cols-2">
             <?php foreach ($products as $product): ?>
                 <div class="item">
-                    <div class="item-img" style="background-image: url('https://placehold.co/400x400');"></div>
+                    <div class="item-img"
+                         style="background-image: url('<?= config("app.url") . "/images/" . $product['image'] ?>');">
+                    </div>
 
                     <h2 class="item-title"><?= htmlspecialchars($product['name']) ?></h2>
                     <p class="item-description"><?= htmlspecialchars($product['description']) ?></p>
                     <span class="item-price"><?= htmlspecialchars($product['price']) ?>zł</span>
 
                     <div class="item-buttons flex flex-row justify-end items-center gap-4">
-                        <a href="<?= config("app.url") . "/management/products/delete.php?id=" . $product['id'] ?>" class="px-8 py-2 bg-red-600 text-neutral-200 font-semibold rounded-lg">
+                        <a href="<?= config("app.url") . "/management/products/delete.php?id=" . $product['id'] ?>"
+                           class="px-8 py-2 bg-red-600 text-neutral-200 font-semibold rounded-lg">
                             Usuń
                         </a>
-                        <a class="px-8 py-2 bg-yellow-600 text-neutral-200 font-semibold rounded-lg">
+                        <a class="px-8 py-2 bg-yellow-600 text-neutral-200 font-semibold rounded-lg"
+                           href="<?= config("app.url") . "/management/products/edit.php?id=" . $product['id'] ?>">
                             Edytuj
                         </a>
                     </div>
