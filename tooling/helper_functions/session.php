@@ -24,6 +24,12 @@ function session_set(string $key, mixed $value): void
     $_SESSION['data'][$key] = $value;
 }
 
+function session_set_ttl(string $key, mixed $value, int $ttl_seconds): void
+{
+    $_SESSION['data'][$key] = $value;
+    $_SESSION['ttl'][$key] = time() + $ttl_seconds;
+}
+
 function session_has(string $key): bool
 {
     global $_SESSION_FLASH;
@@ -43,6 +49,8 @@ function session_remove(string $key): bool
 
     if (isset($_SESSION['data'][$key])) {
         unset($_SESSION['data'][$key]);
+        if (isset($_SESSION['ttl'][$key])) unset($_SESSION['ttl'][$key]);
+
         return true;
     }
 
@@ -73,4 +81,14 @@ function session_initialize(): void
     global $_SESSION_FLASH;
     $_SESSION_FLASH = $_SESSION['flash'] ?? [];
     unset($_SESSION['flash']);
+
+    if (isset($_SESSION['ttl'])) {
+        $time = time();
+        foreach (array_keys($_SESSION['ttl']) as $key) {
+            if ($_SESSION['ttl'][$key] < $time) {
+                unset($_SESSION['data'][$key]);
+                unset($_SESSION['ttl'][$key]);
+            }
+        }
+    }
 }

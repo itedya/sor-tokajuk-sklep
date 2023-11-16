@@ -16,9 +16,10 @@ function render_in_layout(callable $callback): string
     </head>
     <body class="bg-zinc-900 min-h-screen w-full">
     <main class="pt-24 min-h-screen">
-        <?=render_navbar(); ?>
+        <?= render_navbar(); ?>
         <?= $callback(); ?>
     </main>
+    <script src="<?= config("app.url") . "/assets/js/htmx.lib.js" ?>"></script>
     </body>
     </html>
     <?php

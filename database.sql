@@ -53,3 +53,20 @@ CREATE TABLE `products_images`
     CONSTRAINT FOREIGN KEY `fk_products_images_product_id` (`product_id`) REFERENCES `products` (`id`),
     CONSTRAINT UNIQUE KEY `uq_products_images_image` (`image`)
 );
+
+CREATE TABLE `parameters`
+(
+    `id`         VARCHAR(64) NOT NULL,
+    `name`       varchar(32) NOT NULL,
+    `created_at` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT PRIMARY KEY `pk_parameters_id` (`id`),
+    CONSTRAINT UNIQUE KEY `uq_parameters_name` (`name`)
+);
+
+CREATE TABLE `products_have_parameters`
+(
+    `parameter_id` VARCHAR(64)  NOT NULL,
+    `product_id`   int          NOT NULL,
+    `value`        varchar(128) NOT NULL
+);
