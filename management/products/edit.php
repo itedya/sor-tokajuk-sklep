@@ -263,29 +263,68 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
-    } else if ($action === "add_to_database") {
+    } else if ($action === "submit") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
         $price = $_POST['price'] ?? null;
 
-        if ($name === null || $description === null || $price === null) {
-            session_flash("validation_errors", [
-                "name" => "Pole nazwa jest wymagane.",
-                "description" => "Pole opis jest wymagane.",
-                "price" => "Pole cena jest wymagane."
+        if ($name === null) validation_errors_add("name", "Pole nazwa jest wymagane.");
+        if ($description === null) validation_errors_add("description", "Pole opis jest wymagane.");
+        if ($price === null) validation_errors_add("price", "Pole cena jest wymagane.");
+
+        if (!validation_errors_is_empty()) {
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $parameterNames = array_filter(array_keys($_POST), fn($parameter) => str_starts_with($parameter, "parameter_"));
+        $parameterNames = array_map(fn($parameter) => substr($parameter, strlen("parameter_")), $parameterNames);
+        $parameterNames = array_filter($parameterNames, fn($name) => does_parameter_exist($editSessionData, $name));
+
+        $parameters = [];
+        foreach ($parameterNames as $parameterName) {
+            $parameters[$parameterName] = trim($_POST["parameter_" . $parameterName]);
+            if ($parameters[$parameterName] === "") {
+                validation_errors_add("parameter_" . $parameterName, "Pole jest wymagane.");
+                redirect_and_kill($thisUrl . "&render_without_layout=true");
+            }
+        }
+
+        db_transaction(function (mysqli $db) use ($name, $description, $price, $id, $parameters, $editSessionData) {
+            db_execute_stmt($db, "UPDATE products SET name = ?, description = ?, price = ? WHERE id = ?", [
+                $name, $description, $price, $id
             ]);
 
-            redirect_and_kill($thisUrl);
-        }
+            db_execute_stmt($db, "DELETE FROM products_have_parameters WHERE product_id = ?", [$id]);
+
+            if (count($parameters) > 0) {
+                $queryParts = array_map(fn($parameterId) => "(?, ?, ?)", $parameters);
+                $queryParts = join(', ', $queryParts);
+
+                $queryValues = [];
+                foreach ($parameters as $parameterId => $parameterValue) {
+                    $queryValues[] = $id;
+                    $queryValues[] = $parameterId;
+                    $queryValues[] = $parameterValue;
+
+                    if (isset($editSessionData['new_parameters'][$parameterId])) {
+                        db_execute_stmt($db, "INSERT INTO parameters (id, name) VALUES (?, ?)", [$parameterId, $editSessionData['new_parameters'][$parameterId]['name']]);
+                    }
+                }
+
+                db_execute_stmt($db, "INSERT INTO products_have_parameters (product_id, parameter_id, value) VALUES " . $queryParts, $queryValues);
+            }
+        });
+
+        session_flash("after_product_edit", true);
+        session_remove("edit_session_" . $id . "_$editSessionId");
+        redirect_and_kill($thisUrl);
     }
 }
 
 ob_start(); ?>
-    <form method="POST" action="<?= config("app.url") . "/management/products/edit.php" ?>"
-          id="edit-product-form"
-          class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
-        <input type="hidden" name="id" value="<?= $id ?>"/>
-
+    <form method="POST" action="<?= $thisUrl ?>&action=submit"
+        id="edit-product-form"
+        class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
         <h1 class="text-4xl font-bold text-center text-neutral-300">Edytowanie produktu</h1>
 
         <img src="https://placehold.co/400x400" alt="Product image" class="w-full aspect-square rounded-xl"/>
