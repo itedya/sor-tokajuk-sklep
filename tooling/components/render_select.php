@@ -10,7 +10,7 @@ function render_select(string           $label,
 {
     if ($id === null) $id = uniqid("select_");
 
-    if ($oldInput !== false && gettype($validationError) !== "string") {
+    if ($oldInput !== false && gettype($oldInput) !== "string") {
         $oldInput = old_input_has($name) ? old_input_get($name) : "";
     }
 
@@ -25,7 +25,6 @@ function render_select(string           $label,
     $label = htmlspecialchars($label);
     $name = htmlspecialchars($name);
     $id = htmlspecialchars($id);
-    $oldInput = htmlspecialchars($oldInput);
 
     ob_start();
 

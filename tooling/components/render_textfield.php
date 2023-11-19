@@ -10,7 +10,7 @@ function render_textfield(string           $label,
 {
     if ($id === null) $id = uniqid("input_");
 
-    if ($oldInput !== false && gettype($validationError) !== "string") {
+    if ($oldInput === null) {
         $oldInput = old_input_has($name) ? old_input_get($name) : "";
     }
 
