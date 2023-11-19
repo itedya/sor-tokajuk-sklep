@@ -31,11 +31,22 @@ CREATE TABLE `password_resets`
     CONSTRAINT FOREIGN KEY `fk_password_resets_user_id` (`user_id`) REFERENCES `users` (`id`)
 );
 
+CREATE TABLE `categories`
+(
+    `id`   int          NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+
+    CONSTRAINT pk_categories_id PRIMARY KEY (`id`),
+    CONSTRAINT UNIQUE KEY `uq_categories_name` (`name`)
+);
+
+
 CREATE TABLE `products`
 (
     `id`          int          NOT NULL AUTO_INCREMENT,
     `name`        varchar(255) NOT NULL,
     `description` text         NOT NULL,
+    `category_id` int          NOT NULL,
     `price`       int          NOT NULL,
     `created_at`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
