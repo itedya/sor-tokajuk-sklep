@@ -366,6 +366,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         if ($categoryId === "*new_category*") {
             $editSessionData['elements'][] = ['type' => 'new_category_input'];
             $editSessionData['elements'] = array_filter($editSessionData['elements'], fn($e) => $e['type'] !== 'choose_category');
+        } else if (in_array($categoryId, array_keys($editSessionData['new_categories']))) {
+            old_input_add("category_id", $categoryId);
         } else {
             if (!is_numeric($categoryId)) redirect_and_kill($thisUrl . "&render_without_layout=true");
 
@@ -378,6 +380,55 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
             old_input_add("category_id", $categoryId);
         }
+
+        session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
+    } else if ($action === "confirm_new_category_name") {
+        $categoryName = $_POST['new_category_name'] ?? null;
+        if (!is_string($categoryName)) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+        $categoryName = trim($categoryName);
+
+        if (strlen($categoryName) < 3) {
+            validation_errors_add("new_category_name", "Pole nazwa nowej kategorii musi mieć więcej niż 3 znaki.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        if (strlen($categoryName) > 64) {
+            validation_errors_add("new_category_name", "Pole nazwa nowej kategorii musi mieć więcej niż 64 znaki.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $rawCategories = db_query_rows($db, "SELECT id, name FROM categories", []);
+
+        $categoryNames = array_map(fn($category) => $category['name'], $rawCategories);
+        if (in_array($categoryName, $categoryNames)) {
+            validation_errors_add("new_category_name", "Kategoria o takiej nazwie już istnieje.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $editSessionData['new_categories'][uniqid()] = $categoryName;
+
+        $editSessionData['elements'] = array_filter($editSessionData['elements'], fn($e) => $e['type'] !== 'new_category_input');
+
+        $categories = array_map(fn($category) => [
+            'text' => $category['name'],
+            'value' => $category['id']
+        ], $rawCategories);
+
+        foreach ($editSessionData['new_categories'] as $key => $category) {
+            $categories[] = ['text' => $category, 'value' => $key];
+        }
+
+        $categories[] = [
+            'text' => 'Nowa kategoria',
+            'value' => '*new_category*'
+        ];
+
+        $editSessionData['elements'][] = [
+            'type' => 'choose_category',
+            'options' => $categories
+        ];
 
         session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
@@ -547,18 +598,20 @@ ob_start(); ?>
                         'hx-trigger' => 'change'
                     ]) ?>
                 <?php elseif ($element['type'] === "new_category_input"): ?>
-                    <?= render_textfield(label: "Nazwa nowej kategorii", name: "new_category") ?>
+                    <div class="flex flex-row gap-4 items-end">
+                        <?= render_textfield(label: "Nazwa nowej kategorii", name: "new_category_name") ?>
 
-                    <div hx-post="<?= $thisUrl ?>&action=confirm_new_category_name"
-                         hx-include="form" hx-target="form" hx-swap="outerHTML"
-                         class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                        <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
-                    </div>
+                        <div hx-post="<?= $thisUrl ?>&action=confirm_new_category_name"
+                             hx-include="form" hx-target="form" hx-swap="outerHTML"
+                             class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
+                            <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                        </div>
 
-                    <div hx-post="<?= $thisUrl ?>&action=resign_new_category_name"
-                         hx-include="form" hx-target="form" hx-swap="outerHTML"
-                         class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                        <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                        <div hx-post="<?= $thisUrl ?>&action=resign_new_category_name"
+                             hx-include="form" hx-target="form" hx-swap="outerHTML"
+                             class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
+                            <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                        </div>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
