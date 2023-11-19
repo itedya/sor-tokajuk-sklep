@@ -125,9 +125,14 @@ function db_seed(mysqli $db): void
         );
     }
 
+    $categories = require __DIR__ . '/../seeding/categories-data.php';
+    foreach ($categories as $category) {
+        db_execute_stmt($db, "INSERT INTO categories (id, name) VALUES (?, ?)", array_values($category));
+    }
+
     $products = require __DIR__ . '/../seeding/products-data.php';
     foreach ($products as $product) {
-        db_execute_stmt($db, "INSERT INTO products (id, name, description, price) VALUES (?, ?, ?, ?)", array_values($product));
+        db_execute_stmt($db, "INSERT INTO products (id, name, category_id, description, price) VALUES (?, ?, ?, ?, ?)", array_values($product));
     }
 
     $productsImages = require __DIR__ . '/../seeding/products-images-data.php';
