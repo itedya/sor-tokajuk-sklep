@@ -432,6 +432,34 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
+    } else if ($action === "resign_new_category_name") {
+        if (!in_array("new_category_input", array_map(fn($e) => $e['type'], $editSessionData['elements']))) {
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $editSessionData['elements'] = array_filter($editSessionData['elements'], fn($e) => $e['type'] !== 'new_category_input');
+
+        $categories = array_map(fn($category) => [
+            'text' => $category['name'],
+            'value' => $category['id']
+        ], db_query_rows($db, "SELECT id, name FROM categories", []));
+
+        foreach ($editSessionData['new_categories'] as $key => $category) {
+            $categories[] = ['text' => $category, 'value' => $key];
+        }
+
+        $categories[] = [
+            'text' => 'Nowa kategoria',
+            'value' => '*new_category*'
+        ];
+
+        $editSessionData['elements'][] = [
+            'type' => 'choose_category',
+            'options' => $categories
+        ];
+
+        session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "submit") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
