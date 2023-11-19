@@ -362,6 +362,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "choose_category") {
         $categoryId = $_POST['category_id'] ?? null;
+        if ($categoryId === null) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+        if (!in_array("choose_category", array_map(fn($e) => $e['type'], $editSessionData['elements']))) {
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
 
         if ($categoryId === "*new_category*") {
             $editSessionData['elements'][] = ['type' => 'new_category_input'];
@@ -386,6 +391,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     } else if ($action === "confirm_new_category_name") {
         $categoryName = $_POST['new_category_name'] ?? null;
         if (!is_string($categoryName)) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+        if (!in_array("new_category_input", array_map(fn($e) => $e['type'], $editSessionData['elements']))) {
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
 
         $categoryName = trim($categoryName);
 
