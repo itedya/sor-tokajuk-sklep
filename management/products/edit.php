@@ -156,6 +156,8 @@ $action = $_GET['action'] ?? null;
 $thisUrl = config("app.url") . "/management/products/edit.php?id=$id&edit_session=$editSessionId";
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
+
     if ($action === "add_parameter") {
         if (is_choose_parameter_already_in_edit_session($editSessionData)) redirect_and_kill($thisUrl);
 
