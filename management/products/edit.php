@@ -44,11 +44,6 @@ function does_parameter_exist(array $editSessionData, string $parameterId): bool
     return get_parameter_data($editSessionData, $parameterId) !== null;
 }
 
-function does_parameter_exist_for_product(string $productId, string $parameterId): bool
-{
-    return get_parameter_value_for_product($productId, $parameterId) !== null;
-}
-
 function is_parameter_already_in_edit_session(array $editSessionData, string $parameterId): bool
 {
     return count(array_values(array_filter($editSessionData['elements'], function ($e) use ($parameterId) {
@@ -197,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "confirm_choose_parameter") {
         $chooseParameterElement = get_choose_parameter_select_element($editSessionData);
-        if (!$chooseParameterElement === null) redirect_and_kill($thisUrl);
+        if ($chooseParameterElement === null) redirect_and_kill($thisUrl);
 
         // check if parameter id is set in post body
         $parameterId = $_POST["choose_parameter_" . $chooseParameterElement['id']] ?? null;
