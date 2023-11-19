@@ -99,13 +99,15 @@ $editSessionId = $_GET['edit_session'];
 
 $editSessionData = session_get("edit_session_" . $id . "_$editSessionId", [
     'elements' => [],
-    'images' => []
+    'images' => [],
+    'new_categories' => []
 ]);
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     if (!old_input_has("name")) old_input_add("name", $product['name']);
     if (!old_input_has("description")) old_input_add("description", $product['description']);
     if (!old_input_has("price")) old_input_add("price", $product['price']);
+    if (!old_input_has("category_id")) old_input_add("category_id", $product['category_id']);
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {
     old_input_add("name", $_POST['name']);
     old_input_add("description", $_POST['description']);
@@ -473,13 +475,25 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
         $price = $_POST['price'] ?? null;
+        $categoryId = $_POST['category_id'] ?? null;
 
         if ($name === null) validation_errors_add("name", "Pole nazwa jest wymagane.");
         if ($description === null) validation_errors_add("description", "Pole opis jest wymagane.");
         if ($price === null) validation_errors_add("price", "Pole cena jest wymagane.");
+        if ($categoryId === null) validation_errors_add("category_id", "Pole kategoria jest wymagane.");
+
+        $categories = db_query_rows($db, "SELECT id FROM categories", []);
+
+        if (in_array($categoryId, array_keys($editSessionData['new_categories']))) {
+            $categoryId = $editSessionData['new_categories'][$categoryId];
+        } else if (!in_array($categoryId, array_map(fn($category) => $category['id'], $categories))) {
+            validation_errors_add("category_id", "Pole kategoria jest wymagane.");
+        } else {
+            $categoryId = intval($categoryId);
+        }
 
         if (!validation_errors_is_empty()) {
-            redirect_and_kill($thisUrl . "&render_without_layout=true");
+            redirect_and_kill($thisUrl);
         }
 
         $parameterNames = array_filter(array_keys($_POST), fn($parameter) => str_starts_with($parameter, "parameter_"));
@@ -495,9 +509,14 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             }
         }
 
-        db_transaction(function (mysqli $db) use ($name, $description, $price, $id, $parameters, $editSessionData) {
-            db_execute_stmt($db, "UPDATE products SET name = ?, description = ?, price = ? WHERE id = ?", [
-                $name, $description, $price, $id
+        db_transaction(function (mysqli $db) use ($name, $description, $price, $categoryId, $id, $parameters, $editSessionData) {
+            if (gettype($categoryId) === "string") {
+                $stmt = db_execute_stmt($db, "INSERT INTO categories (name) VALUES (?)", [$categoryId]);
+                $categoryId = $stmt->insert_id;
+            }
+
+            db_execute_stmt($db, "UPDATE products SET name = ?, description = ?, price = ?, category_id = ? WHERE id = ?", [
+                $name, $description, $price, $categoryId, $id
             ]);
 
             db_execute_stmt($db, "DELETE FROM products_have_parameters WHERE product_id = ?", [$id]);
