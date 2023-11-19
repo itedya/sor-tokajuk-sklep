@@ -343,14 +343,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
-//        /var/www/html/management/products/edit.php:314:
-//array (size=6)
-//  'name' => string 'odpowiedzi.sql' (length=14)
-//  'full_path' => string 'odpowiedzi.sql' (length=14)
-//  'type' => string 'application/sql' (length=15)
-//  'tmp_name' => string '/tmp/phpBOzr3i' (length=14)
-//  'error' => int 0
-//  'size' => int 2172
     } else if ($action === "submit") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
