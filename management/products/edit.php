@@ -133,6 +133,21 @@ if (!session_has("edit_session_" . $id . "_$editSessionId")) {
 
     $editSessionData['images'] = $productImages;
 
+    $categories = array_map(fn($category) => [
+        'text' => $category['name'],
+        'value' => $category['id']
+    ], db_query_rows($db, "SELECT * FROM categories", []));
+
+    $categories[] = [
+        'text' => 'Nowa kategoria',
+        'value' => '*new_category*'
+    ];
+
+    $editSessionData['elements'][] = [
+        'type' => 'choose_category',
+        'options' => $categories
+    ];
+
     session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
 }
 
@@ -144,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if ($action === "add_parameter") {
         if (is_choose_parameter_already_in_edit_session($editSessionData)) redirect_and_kill($thisUrl);
 
-        $parameters = db_query_rows(get_db_connection(), "SELECT parameters.id, parameters.name, pi.value FROM parameters LEFT JOIN products_have_parameters pi ON parameters.id = pi.parameter_id AND pi.product_id = ?", [$id]);
+        $parameters = db_query_rows($db, "SELECT parameters.id, parameters.name, pi.value FROM parameters LEFT JOIN products_have_parameters pi ON parameters.id = pi.parameter_id AND pi.product_id = ?", [$id]);
 
         $parameters = array_map(fn($parameter) => [
             "text" => $parameter['name'],
@@ -165,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
 
-        session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "resign_choose_parameter") {
         if (!in_array("choose_parameter", array_map(fn($e) => $e['type'], $editSessionData['elements']))) redirect_and_kill($thisUrl);
@@ -343,6 +358,27 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
+    } else if ($action === "choose_category") {
+        $categoryId = $_POST['category_id'] ?? null;
+
+        if ($categoryId === "*new_category*") {
+            $editSessionData['elements'][] = ['type' => 'new_category_input'];
+            $editSessionData['elements'] = array_filter($editSessionData['elements'], fn($e) => $e['type'] !== 'choose_category');
+        } else {
+            if (!is_numeric($categoryId)) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+            $categoryId = intval($categoryId);
+
+            $rawCategories = db_query_rows($db, "SELECT id FROM categories", []);
+            $categoryIds = array_map(fn($category) => $category['id'], $rawCategories);
+
+            if (!in_array($categoryId, $categoryIds)) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+            old_input_add("category_id", $categoryId);
+        }
+
+        session_set_ttl("edit_session_{$id}_{$editSessionId}", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "submit") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
@@ -499,6 +535,28 @@ ob_start(); ?>
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
                             <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
                         </div>
+                    </div>
+                <?php elseif ($element['type'] === 'choose_category'): ?>
+                    <?= render_select("Wybierz kategorię", 'category_id', options: $element['options'], attributes: [
+                        'hx-post' => $thisUrl . "&action=choose_category",
+                        'hx-include' => 'form',
+                        'hx-target' => 'form',
+                        'hx-swap' => 'outerHTML',
+                        'hx-trigger' => 'change'
+                    ]) ?>
+                <?php elseif ($element['type'] === "new_category_input"): ?>
+                    <?= render_textfield(label: "Nazwa nowej kategorii", name: "new_category") ?>
+
+                    <div hx-post="<?= $thisUrl ?>&action=confirm_new_category_name"
+                         hx-include="form" hx-target="form" hx-swap="outerHTML"
+                         class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
+                        <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                    </div>
+
+                    <div hx-post="<?= $thisUrl ?>&action=resign_new_category_name"
+                         hx-include="form" hx-target="form" hx-swap="outerHTML"
+                         class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
+                        <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
