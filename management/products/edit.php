@@ -85,14 +85,21 @@ if ($id === null) redirect_and_kill(config("app.url") . "/management/products.ph
 if (!is_numeric($id)) redirect_and_kill(config("app.url") . "/management/products.php");
 $id = intval($id);
 
-$product = db_query_row(get_db_connection(), "SELECT * FROM products WHERE id = ?", [$id]);
+$db = get_db_connection();
+
+$product = db_query_row($db, "SELECT * FROM products WHERE id = ?", [$id]);
 if ($product === null) redirect_and_kill(config("app.url") . "/management/products.php");
+
+$productImages = array_map(function ($element) {
+    return $element['image'];
+}, db_query_rows($db, "SELECT image FROM products_images WHERE product_id = ?", [$id]));
 
 if (!isset($_GET['edit_session'])) redirect_and_kill(config("app.url") . "/management/products/edit.php?id=$id&edit_session=" . uniqid());
 $editSessionId = $_GET['edit_session'];
 
 $editSessionData = session_get("edit_session_" . $id . "_$editSessionId", [
-    'elements' => []
+    'elements' => [],
+    'images' => []
 ]);
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
@@ -123,6 +130,8 @@ if (!session_has("edit_session_" . $id . "_$editSessionId")) {
             ];
         }
     }
+
+    $editSessionData['images'] = $productImages;
 
     session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
 }
@@ -291,6 +300,57 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
+    } else if ($action === "remove_image") {
+        $image = $_GET['image'] ?? null;
+
+        if ($image === null) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+        $editSessionData['images'] = array_filter($editSessionData['images'], fn($i) => $i !== $image);
+
+        session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+    } else if ($action === "add_image") {
+        $image = $_FILES['image'] ?? null;
+
+        if ($image === null) redirect_and_kill($thisUrl . "&render_without_layout=true");
+
+        if ($image['error'] !== 0) {
+            validation_errors_add("image", "Wystąpił błąd podczas przesyłania pliku.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        if ($image['size'] > 1024 * 1024 * 5) {
+            validation_errors_add("image", "Plik jest za duży. Maksymalny rozmiar pliku to 5MB.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        if (!in_array($image['type'], ["image/jpeg", "image/png"]) || !in_array(mime_content_type($image['tmp_name']), ['image/jpeg', 'image/png'])) {
+            validation_errors_add("image", "Plik musi być w formacie JPG lub PNG.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $explodedImageName = explode(".", "$image[name]");
+        $imageId = uniqid("product_image_") . "." . array_pop($explodedImageName);
+
+
+        $imagePath = __DIR__ . "/../../images/$imageId";
+
+        if (!move_uploaded_file($image['tmp_name'], $imagePath)) {
+            validation_errors_add("image", "Wystąpił błąd podczas przesyłania pliku.");
+            redirect_and_kill($thisUrl . "&render_without_layout=true");
+        }
+
+        $editSessionData['images'][] = $imageId;
+
+        session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
+//        /var/www/html/management/products/edit.php:314:
+//array (size=6)
+//  'name' => string 'odpowiedzi.sql' (length=14)
+//  'full_path' => string 'odpowiedzi.sql' (length=14)
+//  'type' => string 'application/sql' (length=15)
+//  'tmp_name' => string '/tmp/phpBOzr3i' (length=14)
+//  'error' => int 0
+//  'size' => int 2172
     } else if ($action === "submit") {
         $name = $_POST['name'] ?? null;
         $description = $_POST['description'] ?? null;
@@ -341,6 +401,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
                 db_execute_stmt($db, "INSERT INTO products_have_parameters (product_id, parameter_id, value) VALUES " . $queryParts, $queryValues);
             }
+
+            db_execute_stmt($db, "DELETE FROM products_images WHERE product_id = ?", [$id]);
+
+            foreach ($editSessionData['images'] as $image) {
+                db_execute_stmt($db, "INSERT INTO products_images (product_id, image) VALUES (?, ?)", [$id, $image]);
+            }
         });
 
         session_flash("after_product_edit", true);
@@ -355,7 +421,38 @@ ob_start(); ?>
           class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
         <h1 class="text-4xl font-bold text-center text-neutral-300">Edytowanie produktu</h1>
 
-        <img src="https://placehold.co/400x400" alt="Product image" class="w-full aspect-square rounded-xl"/>
+        <img src="<?= config("app.url") ?>/images/<?= $productImages[0] ?>" alt="Product image"
+             class="w-full aspect-square rounded-xl"/>
+
+        <div class="w-full overflow-x-auto flex flex-row items-center gap-4">
+            <?php foreach ($editSessionData['images'] as $productImage): ?>
+                <div style="background-image: url('<?= config("app.url") ?>/images/<?= $productImage ?>');"
+                     hx-post="<?= $thisUrl ?>&action=remove_image&image=<?= $productImage ?>"
+                     hx-include="form"
+                     hx-target="form"
+                     hx-swap="outerHTML"
+                     hx-trigger="click"
+                     class="cursor-pointer w-full aspect-square rounded-xl h-24 w-24 bg-no-repeat bg-cover relative product-photo">
+                    <div class="bg-neutral-800 bg-opacity-80 top-0 left-0 w-full h-full text-neutral-200 flex justify-center items-center">
+                        <div class="h-10 w-10">
+                            <?= file_get_contents(__DIR__ . "/../../assets/trash-icon.svg") ?>
+                        </div>
+                    </div>
+
+                    <input name="images[]" value="<?= htmlspecialchars($productImage) ?>" type="hidden"/>
+                </div>
+            <?php endforeach; ?>
+
+            <div class="h-24 w-24 flex justify-center items-center text-neutral-200 border-2 border-neutral-200 rounded-xl relative">
+                <input type="file" name="image" class="opacity-0 absolute top-0 left-0 w-full h-full"
+                       hx-post="<?= $thisUrl ?>&action=add_image" hx-encoding="multipart/form-data"
+                       hx-include="form" hx-target="form" hx-swap="outerHTML" hx-trigger="change"/>
+                <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+            </div>
+        </div>
+        <?php if (validation_errors_has("image")): ?>
+            <span class="text-red-400 font-bold"><?= htmlspecialchars(validation_errors_get("image")) ?></span>
+        <?php endif; ?>
 
         <div class="bg-neutral-800 border-4 border-neutral-800 relative rounded-xl">
             <label for="image" class="p-4 w-full flex flex-row gap-4 rounded-xl text-neutral-300 w-full h-full">Wybrano
@@ -436,6 +533,16 @@ $formContent = ob_get_clean();
 
 if ($_SERVER['REQUEST_METHOD'] === "GET" && ($_GET['render_without_layout'] ?? "false") !== "true") {
     echo render_in_layout(function () use ($formContent) { ?>
+        <style>
+            .product-photo > div {
+                visibility: hidden;
+            }
+
+            .product-photo:hover > div {
+                visibility: visible;
+            }
+        </style>
+
         <div class="flex justify-center items-center p-4">
             <?= $formContent ?>
         </div>
