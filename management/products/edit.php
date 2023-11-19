@@ -5,6 +5,18 @@ require_once __DIR__ . "/../../tooling/autoload.php";
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
+if (session_has("after_product_edit")) {
+    echo render_in_layout(function () { ?>
+        <div class="flex flex-col justify-center items-center p-4 gap-8">
+            <h1 class="text-4xl font-bold text-center text-neutral-300">Sukces</h1>
+            <p class="text-xl text-neutral-200 text-center">Pomyślnie zaktualizowano produkt.</p>
+            <a class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg disabled:bg-blue-400 duration-300"
+               href="<?= config("app.url") . "/management/products.php" ?>">Powrót do listy produktów</a>
+        </div>
+    <?php });
+    die();
+}
+
 function get_parameter_value_for_product(string $productId, string $parameterId): ?string
 {
     if (isset($editSessionData['new_parameters'][$parameterId])) return null;
@@ -111,6 +123,8 @@ if (!session_has("edit_session_" . $id . "_$editSessionId")) {
             ];
         }
     }
+
+    session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
 }
 
 $action = $_GET['action'] ?? null;
@@ -140,13 +154,19 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             'options' => $parameters
         ];
 
+        foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
+
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "resign_choose_parameter") {
         if (!in_array("choose_parameter", array_map(fn($e) => $e['type'], $editSessionData['elements']))) redirect_and_kill($thisUrl);
 
         $editSessionData['elements'] = array_filter($editSessionData['elements'], fn($e) => $e['type'] !== 'choose_parameter');
 
+        foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
+
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "confirm_choose_parameter") {
         $chooseParameterElement = get_choose_parameter_select_element($editSessionData);
         if (!$chooseParameterElement === null) redirect_and_kill($thisUrl);
@@ -185,7 +205,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $editSessionData['elements'][] = ['type' => 'new_parameter_input'];
         }
 
+        foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
+
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "remove_parameter") {
         $parameterId = $_GET['parameter_id'] ?? null;
         if ($parameterId === null) redirect_and_kill($thisUrl);
@@ -210,7 +233,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             }
         }
 
+        foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
+
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
+        redirect_and_kill($thisUrl . "&render_without_layout=true");
     } else if ($action === "confirm_new_parameter") {
         if (!is_new_parameter_name_input_in_edit_session($editSessionData)) redirect_and_kill($thisUrl);
 
@@ -243,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $newParameterId = $newParameterId . "-$number";
         }
 
-        $editSessionData['new_parameters'][] = [
+        $editSessionData['new_parameters'][$newParameterId] = [
             'id' => $newParameterId,
             'name' => $newParameterName
         ];
@@ -260,6 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             'parameter_id' => $newParameterId,
             'parameter_name' => $newParameterName
         ];
+
+        foreach (array_keys($_POST) as $key) old_input_add($key, $_POST[$key]);
 
         session_set_ttl("edit_session_" . $id . "_$editSessionId", $editSessionData, 60 * 30);
         redirect_and_kill($thisUrl . "&render_without_layout=true");
@@ -323,8 +351,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
 ob_start(); ?>
     <form method="POST" action="<?= $thisUrl ?>&action=submit"
-        id="edit-product-form"
-        class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
+          id="edit-product-form"
+          class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
         <h1 class="text-4xl font-bold text-center text-neutral-300">Edytowanie produktu</h1>
 
         <img src="https://placehold.co/400x400" alt="Product image" class="w-full aspect-square rounded-xl"/>
