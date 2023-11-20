@@ -447,17 +447,18 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             }
         }
 
-        db_transaction(function (mysqli $db) use ($name, $description, $price, $categoryId, $id, $parameters, $createSessionData) {
+        db_transaction(function (mysqli $db) use ($name, $description, $price, $categoryId, $parameters, $createSessionData) {
             if (gettype($categoryId) === "string") {
                 $stmt = db_execute_stmt($db, "INSERT INTO categories (name) VALUES (?)", [$categoryId]);
                 $categoryId = $stmt->insert_id;
+                $stmt->close();
             }
 
-            db_execute_stmt($db, "UPDATE products SET name = ?, description = ?, price = ?, category_id = ? WHERE id = ?", [
-                $name, $description, $price, $categoryId, $id
+            $stmt = db_execute_stmt($db, "INSERT INTO products (name, description, category_id, price) VALUES (?, ?, ?, ?)", [
+                $name, $description, $price, $categoryId
             ]);
-
-            db_execute_stmt($db, "DELETE FROM products_have_parameters WHERE product_id = ?", [$id]);
+            $id = $stmt->insert_id;
+            $stmt->close();
 
             if (count($parameters) > 0) {
                 $queryParts = array_map(fn($parameterId) => "(?, ?, ?)", $parameters);
@@ -477,15 +478,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 db_execute_stmt($db, "INSERT INTO products_have_parameters (product_id, parameter_id, value) VALUES " . $queryParts, $queryValues);
             }
 
-            db_execute_stmt($db, "DELETE FROM products_images WHERE product_id = ?", [$id]);
-
             foreach ($createSessionData['images'] as $image) {
                 db_execute_stmt($db, "INSERT INTO products_images (product_id, image) VALUES (?, ?)", [$id, $image]);
             }
         });
 
-        session_flash("after_product_edit", true);
-        session_remove("edit_session_" . $id . "_$createSessionId");
+        session_flash("after_product_creation", true);
+        session_remove($createSessionId);
         redirect_and_kill($thisUrl);
     }
 }
@@ -495,11 +494,6 @@ ob_start(); ?>
           id="edit-product-form"
           class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
         <h1 class="text-4xl font-bold text-center text-neutral-300">Tworzenie produktu</h1>
-
-        <?php if (count($createSessionData['images']) > 0): ?>
-            <img src="<?= base_url("/images/{$createSessionData['images'][0]}") ?>" alt="Product image"
-                 class="w-full aspect-square rounded-xl"/>
-        <?php endif; ?>
 
         <div class="w-full overflow-x-auto flex flex-row items-center gap-4">
             <?php foreach ($createSessionData['images'] as $productImage): ?>
