@@ -553,9 +553,6 @@ ob_start(); ?>
           class="w-full max-w-xl p-4 flex flex-col gap-8 rounded-xl">
         <h1 class="text-4xl font-bold text-center text-neutral-300">Edytowanie produktu</h1>
 
-        <img src="<?= config("app.url") ?>/images/<?= $productImages[0] ?>" alt="Product image"
-             class="w-full aspect-square rounded-xl"/>
-
         <div class="w-full overflow-x-auto flex flex-row items-center gap-4">
             <?php foreach ($editSessionData['images'] as $productImage): ?>
                 <div style="background-image: url('<?= config("app.url") ?>/images/<?= $productImage ?>');"
@@ -585,12 +582,6 @@ ob_start(); ?>
         <?php if (validation_errors_has("image")): ?>
             <span class="text-red-400 font-bold"><?= htmlspecialchars(validation_errors_get("image")) ?></span>
         <?php endif; ?>
-
-        <div class="bg-neutral-800 border-4 border-neutral-800 relative rounded-xl">
-            <label for="image" class="p-4 w-full flex flex-row gap-4 rounded-xl text-neutral-300 w-full h-full">Wybrano
-                zdjęcie: </label>
-            <input type="file" name="image" id="image" class="w-full h-full absolute top-0 left-0 invisible"/>
-        </div>
 
         <div class="flex flex-col gap-4" id="edit-product-form-body">
             <?= render_textfield(label: 'Nazwa', name: 'name', type: 'text') ?>
