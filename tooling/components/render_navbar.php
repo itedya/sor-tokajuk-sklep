@@ -8,6 +8,7 @@ function render_navbar()
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
             ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
+            ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
             ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
         ];
     } else {
