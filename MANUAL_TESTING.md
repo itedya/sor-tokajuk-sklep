@@ -80,3 +80,12 @@
 - [x] Strona wyświetla "Twoje hasło zostało zresetowane, możesz już się zalogować.", gdy podano poprawne hasła
 - [x] Strona zmienia hasło w bazie danych, gdy podano poprawne hasła
 - [x] Strona usuwa wpis z bazy danych o resecie, gdy podano poprawne hasła
+
+## Panel klienta
+
+`client-panel/index.php`
+
+- [ ] Strona odrzuca request, gdy nie jest się zalogowanym
+- [ ] Strona wyświetla email zalogowanego użytkownika
+- [ ] Strona wyświetla zamówienia zalogowanego użytkownika
+- [ ] Strona wyświetla listę ulubionych produktów zalogowanego użytkownika
