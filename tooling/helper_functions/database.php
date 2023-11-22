@@ -125,6 +125,11 @@ function db_seed(mysqli $db): void
         );
     }
 
+    $deliveryMethodsData = require __DIR__ . '/../seeding/delivery-methods-data.php';
+    foreach ($deliveryMethodsData as $deliveryMethod) {
+        db_execute_stmt($db, "INSERT INTO delivery_methods (id, name, price) VALUES (?, ?, ?)", array_values($deliveryMethod));
+    }
+
     $categories = require __DIR__ . '/../seeding/categories-data.php';
     foreach ($categories as $category) {
         db_execute_stmt($db, "INSERT INTO categories (id, name) VALUES (?, ?)", array_values($category));
