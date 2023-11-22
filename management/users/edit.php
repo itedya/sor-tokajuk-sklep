@@ -61,12 +61,6 @@ echo render_in_layout(function () use ($users) { ?>
                 type: "email"
             ) ?>
 
-            <?= render_textfield(
-                label: "Hasło",
-                name: "password",
-                type: "password"
-            ) ?>
-
             <?= render_select(
                 label: "Rola",
                 name: "is_admin",
