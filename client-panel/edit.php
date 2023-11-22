@@ -24,7 +24,22 @@ if (session_has("user_edited")) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    // ...
+    $email = $_POST['email'] ?? null;
+
+    if ($email === null) validation_errors_add("email", "Email nie może być pusty.");
+
+    if (!validation_errors_is_empty()) {
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    db_transaction(function (mysqli $db) use ($email) {
+        $user = database_users_get_by_id($db, auth_get_user_id());
+
+        database_users_update($db, $user['id'], $email, $user['password'], $user['is_admin'], $user['is_verified']);
+    });
+
+    session_flash("user_edited", true);
+    redirect_and_kill($_SERVER['REQUEST_URI']);
 }
 
 $user = database_users_get_by_id(get_db_connection(), auth_get_user_id());
