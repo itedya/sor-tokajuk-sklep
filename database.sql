@@ -50,7 +50,7 @@ CREATE TABLE `products`
     `price`       DECIMAL(6, 2) NOT NULL,
     `created_at`  datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT pk_products_id PRIMARY KEY (`id`)
+    CONSTRAINT `pk_products_id` PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `products_images`
@@ -60,9 +60,9 @@ CREATE TABLE `products_images`
     `image`      varchar(255) NOT NULL,
     `created_at` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT pk_products_images_id PRIMARY KEY (`id`),
-    CONSTRAINT FOREIGN KEY `fk_products_images_product_id` (`product_id`) REFERENCES `products` (`id`),
-    CONSTRAINT UNIQUE KEY `uq_products_images_image` (`image`)
+    CONSTRAINT `pk_products_images_id` PRIMARY KEY (`id`),
+    CONSTRAINT `fk_products_images_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+    CONSTRAINT `uq_products_images_image` UNIQUE KEY (`image`)
 );
 
 CREATE TABLE `parameters`
@@ -71,8 +71,8 @@ CREATE TABLE `parameters`
     `name`       varchar(32) NOT NULL,
     `created_at` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT PRIMARY KEY `pk_parameters_id` (`id`),
-    CONSTRAINT UNIQUE KEY `uq_parameters_name` (`name`)
+    CONSTRAINT `pk_parameters_id` PRIMARY KEY (`id`),
+    CONSTRAINT `uq_parameters_name` UNIQUE KEY (`name`)
 );
 
 CREATE TABLE `products_have_parameters`
@@ -80,29 +80,6 @@ CREATE TABLE `products_have_parameters`
     `parameter_id` VARCHAR(64)  NOT NULL,
     `product_id`   int          NOT NULL,
     `value`        varchar(128) NOT NULL
-);
-
-CREATE TABLE `orders`
-(
-    `id`                 int      NOT NULL AUTO_INCREMENT,
-    `user_id`            int      NOT NULL,
-    `status`             int      NOT NULL,
-    `delivery_method_id` int      NOT NULL,
-    `created_at`         datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT PRIMARY KEY `pk_orders_id` (`id`),
-    CONSTRAINT FOREIGN KEY `fk_orders_user_id` (`user_id`) REFERENCES `users` (`id`)
-);
-
-CREATE TABLE `orders_have_products`
-(
-    `order_id`   int NOT NULL,
-    `product_id` int NOT NULL,
-    `quantity`   int NOT NULL,
-
-    CONSTRAINT PRIMARY KEY `pk_orders_have_products_order_id_product_id` (`order_id`, `product_id`),
-    CONSTRAINT FOREIGN KEY `fk_orders_have_products_order_id` (`order_id`) REFERENCES `orders` (`id`),
-    CONSTRAINT FOREIGN KEY `fk_orders_have_products_product_id` (`product_id`) REFERENCES `products` (`id`)
 );
 
 CREATE TABLE `delivery_methods`
@@ -113,6 +90,30 @@ CREATE TABLE `delivery_methods`
     created_at datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at datetime               DEFAULT NULL,
 
-    CONSTRAINT pk_delivery_methods_id PRIMARY KEY (`id`),
-    CONSTRAINT UNIQUE KEY `uq_delivery_methods_name` (`name`)
+    CONSTRAINT `pk_delivery_methods_id` PRIMARY KEY (`id`),
+    CONSTRAINT `uq_delivery_methods_name` UNIQUE KEY (`name`)
+);
+
+CREATE TABLE `orders`
+(
+    `id`                 int      NOT NULL AUTO_INCREMENT,
+    `user_id`            int      NOT NULL,
+    `status`             int      NOT NULL,
+    `delivery_method_id` int      NOT NULL,
+    `created_at`         datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT `pk_orders_id` PRIMARY KEY (`id`),
+    CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+    CONSTRAINT `fk_orders_delivery_method_id` FOREIGN KEY (`delivery_method_id`) REFERENCES `delivery_methods` (`id`)
+);
+
+CREATE TABLE `orders_have_products`
+(
+    `order_id`   int NOT NULL,
+    `product_id` int NOT NULL,
+    `quantity`   int NOT NULL,
+
+    CONSTRAINT `pk_orders_have_products_order_id_product_id` PRIMARY KEY (`order_id`, `product_id`),
+    CONSTRAINT `fk_orders_have_products_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+    CONSTRAINT `fk_orders_have_products_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 );
