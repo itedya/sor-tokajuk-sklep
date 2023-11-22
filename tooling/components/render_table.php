@@ -1,6 +1,6 @@
 <?php
 
-function render_column_table(array $columns): string
+function render_table(array $columns): string
 {
     $columnClasses = join(' ', ['border', 'border-neutral-700', 'bg-neutral-800', 'text-left', 'font-normal', 'p-2', 'whitespace-nowrap']);
     $valueClasses = join(' ', ['border', 'border-neutral-700', 'bg-neutral-900', 'p-2', 'text-neutral-400']);
