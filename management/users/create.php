@@ -22,6 +22,36 @@ if (session_has("user_created")) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    $email = $_POST['email'] ?? null;
+    $password = $_POST['password'] ?? null;
+    $repeat_password = $_POST['repeat_password'] ?? null;
+
+    if ($email === null) validation_errors_add("email", "Email nie może być pusty.");
+    if ($password === null) validation_errors_add("password", "Hasło nie może być puste.");
+    if ($repeat_password === null) validation_errors_add("repeat_password", "Powtórzone hasło nie może być puste.");
+
+    foreach ($_POST as $key => $value) old_input_add($key, $value);
+
+    if (!validation_errors_is_empty()) {
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    if ($password !== $repeat_password) {
+        validation_errors_add("repeat_password", "Hasła nie są takie same.");
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    db_transaction(function (mysqli $db) use ($email, $password) {
+        $user = db_query_row($db, "SELECT * FROM users WHERE email = ?", [$email]);
+        if ($user !== null) {
+            validation_errors_add("email", "Użytkownik o podanym adresie email już istnieje.");
+            redirect_and_kill($_SERVER['REQUEST_URI']);
+        }
+
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        db_execute_stmt($db, "INSERT INTO users (email, password, is_admin, is_verified) VALUES (?, ?, ?, ?)", [$email, $password_hash, 1, 1]);
+    });
 
     session_flash("user_created", true);
     redirect_and_kill($_SERVER['REQUEST_URI']);
