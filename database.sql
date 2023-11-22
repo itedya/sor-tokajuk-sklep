@@ -43,12 +43,12 @@ CREATE TABLE `categories`
 
 CREATE TABLE `products`
 (
-    `id`          int          NOT NULL AUTO_INCREMENT,
-    `name`        varchar(255) NOT NULL,
-    `description` text         NOT NULL,
-    `category_id` int          NOT NULL,
-    `price`       int          NOT NULL,
-    `created_at`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id`          int           NOT NULL AUTO_INCREMENT,
+    `name`        varchar(255)  NOT NULL,
+    `description` text          NOT NULL,
+    `category_id` int           NOT NULL,
+    `price`       DECIMAL(6, 2) NOT NULL,
+    `created_at`  datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT pk_products_id PRIMARY KEY (`id`)
 );
@@ -107,11 +107,11 @@ CREATE TABLE `orders_have_products`
 
 CREATE TABLE `delivery_methods`
 (
-    id         int          NOT NULL AUTO_INCREMENT,
-    name       varchar(255) NOT NULL,
-    price      int          NOT NULL,
-    created_at datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at datetime              DEFAULT NULL,
+    id         int           NOT NULL AUTO_INCREMENT,
+    name       varchar(255)  NOT NULL,
+    price      DECIMAL(6, 2) NOT NULL,
+    created_at datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at datetime               DEFAULT NULL,
 
     CONSTRAINT pk_delivery_methods_id PRIMARY KEY (`id`),
     CONSTRAINT UNIQUE KEY `uq_delivery_methods_name` (`name`)
