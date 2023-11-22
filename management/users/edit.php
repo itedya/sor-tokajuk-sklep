@@ -64,7 +64,7 @@ else old_input_add("is_admin", intval(old_input_get('is_admin')));
 echo render_in_layout(function () use ($users) { ?>
     <div class="container mx-auto p-4 gap-8 flex flex-col">
         <div class="text-3xl text-center text-neutral-300 p-4">
-            Dodaj użytkownika
+            Edytuj użytkownika
         </div>
 
         <form action="<?= base_url("/management/users/edit.php") ?>" method="POST"
