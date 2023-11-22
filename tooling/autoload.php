@@ -26,6 +26,8 @@ require_once __DIR__ . "/PHPMailer-master/src/Exception.php";
 require_once __DIR__ . "/PHPMailer-master/src/SMTP.php";
 require_once __DIR__ . "/PHPMailer-master/src/PHPMailer.php";
 
+require_once __DIR__ . '/components/render_column_table.php';
+require_once __DIR__ . '/components/render_table.php';
 require_once __DIR__ . "/components/render_in_layout.php";
 require_once __DIR__ . "/components/render_navbar.php";
 require_once __DIR__ . "/components/render_textfield.php";
