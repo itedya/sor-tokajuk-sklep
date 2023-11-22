@@ -10,7 +10,7 @@ if (session_has("user_deleted")) {
         <div class="container p-4 flex flex-col gap-8 mx-auto">
             <h2 class="text-3xl text-center text-neutral-300">Użytkownik został usunięty.</h2>
             <div class="flex justify-center items-center">
-                <a href="<?= config("app.url") . "/management/users.php" ?>"
+                <a href="<?= base_url("/management/users.php")  ?>"
                    class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">
                     Powrót do użytkowników
                 </a>
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     });
 
     session_flash("user_deleted", true);
-    redirect_and_kill(base_url("/management/users.php"));
+    redirect_and_kill($_SERVER['REQUEST_URI']);
 } else {
     // get id
     if (!isset($_GET['id'])) redirect_and_kill(base_url("/management/users.php"));
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         </div>
 
         <div class="flex flex-row justify-center items-center gap-4">
-            <form action="<?= base_url("/management/products/delete.php") ?>" method="POST">
+            <form action="<?= base_url("/management/users/delete.php") ?>" method="POST">
                 <input type="hidden" name="id" value="<?= $result['id'] ?>"/>
 
                 <button class="px-8 py-2 bg-red-600 text-neutral-200 font-semibold rounded-lg">
