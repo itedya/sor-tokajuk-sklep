@@ -5,7 +5,7 @@ require_once __DIR__ . '/../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
-$users = [];
+$users = db_query_rows(get_db_connection(), "SELECT * FROM users", []);
 
 echo render_in_layout(function () use ($users) { ?>
     <div class="container mx-auto p-4 gap-8 flex flex-col">
