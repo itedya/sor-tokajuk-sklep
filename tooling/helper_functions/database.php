@@ -101,7 +101,6 @@ function db_drop(mysqli $db): void
     WHERE table_schema = ?;
 SQL;
 
-
     $queries = db_query_rows($db, $selectDropsSQL, [config("database.database")]);
     $queries = array_map(fn($q) => $q['text'], $queries);
 
@@ -112,6 +111,14 @@ SQL;
     }
 
     db_execute_stmt($db, "SET FOREIGN_KEY_CHECKS = 1;", []);
+
+    $files = glob(__DIR__ . '/../../images/*');
+
+    foreach ($files as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
 }
 
 function db_seed(mysqli $db): void
@@ -123,11 +130,6 @@ function db_seed(mysqli $db): void
             "INSERT INTO users (id, email, password, is_verified, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?)",
             array_values($user)
         );
-    }
-
-    $deliveryMethodsData = require __DIR__ . '/../seeding/delivery-methods-data.php';
-    foreach ($deliveryMethodsData as $deliveryMethod) {
-        db_execute_stmt($db, "INSERT INTO delivery_methods (id, name, price) VALUES (?, ?, ?)", array_values($deliveryMethod));
     }
 
     $categories = require __DIR__ . '/../seeding/categories-data.php';
@@ -150,6 +152,29 @@ function db_seed(mysqli $db): void
         db_execute_stmt($db,
             "INSERT INTO products_images (id, product_id, image, created_at) VALUES (?, ?, ?, ?)",
             [$productImage['id'], $productImage['product_id'], $productImageName, $productImage['created_at']]
+        );
+    }
+
+    $deliveryMethodsData = require __DIR__ . '/../seeding/delivery-methods-data.php';
+    foreach ($deliveryMethodsData as $deliveryMethod) {
+        db_execute_stmt($db, "INSERT INTO delivery_methods (id, name, price) VALUES (?, ?, ?)", array_values($deliveryMethod));
+    }
+
+    $orders = require __DIR__ . '/../seeding/orders-data.php';
+    foreach ($orders as $order) {
+        db_execute_stmt(
+            $db,
+            "INSERT INTO orders (id, user_id, status, delivery_method_id) VALUES (?, ?, ?, ?)",
+            array_values($order)
+        );
+    }
+
+    $orderProducts = require __DIR__ . '/../seeding/order-products-data.php';
+    foreach ($orderProducts as $orderProduct) {
+        db_execute_stmt(
+            $db,
+            "INSERT INTO orders_have_products (order_id, product_id, quantity) VALUES (?, ?, ?)",
+            array_values($orderProduct)
         );
     }
 }
