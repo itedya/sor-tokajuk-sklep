@@ -81,3 +81,38 @@ CREATE TABLE `products_have_parameters`
     `product_id`   int          NOT NULL,
     `value`        varchar(128) NOT NULL
 );
+
+CREATE TABLE `orders`
+(
+    `id`                 int      NOT NULL AUTO_INCREMENT,
+    `user_id`            int      NOT NULL,
+    `status`             int      NOT NULL,
+    `delivery_method_id` int      NOT NULL,
+    `created_at`         datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT PRIMARY KEY `pk_orders_id` (`id`),
+    CONSTRAINT FOREIGN KEY `fk_orders_user_id` (`user_id`) REFERENCES `users` (`id`)
+);
+
+CREATE TABLE `orders_have_products`
+(
+    `order_id`   int NOT NULL,
+    `product_id` int NOT NULL,
+    `quantity`   int NOT NULL,
+
+    CONSTRAINT PRIMARY KEY `pk_orders_have_products_order_id_product_id` (`order_id`, `product_id`),
+    CONSTRAINT FOREIGN KEY `fk_orders_have_products_order_id` (`order_id`) REFERENCES `orders` (`id`),
+    CONSTRAINT FOREIGN KEY `fk_orders_have_products_product_id` (`product_id`) REFERENCES `products` (`id`)
+);
+
+CREATE TABLE `delivery_methods`
+(
+    id         int          NOT NULL AUTO_INCREMENT,
+    name       varchar(255) NOT NULL,
+    price      int          NOT NULL,
+    created_at datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at datetime              DEFAULT NULL,
+
+    CONSTRAINT pk_delivery_methods_id PRIMARY KEY (`id`),
+    CONSTRAINT UNIQUE KEY `uq_delivery_methods_name` (`name`)
+);

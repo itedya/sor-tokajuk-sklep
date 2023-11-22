@@ -10,12 +10,7 @@ $userId = auth_get_user_id();
 $db = get_db_connection();
 $user = database_users_get_by_id($db, $userId);
 
-$orders = [
-    ['id' => 999, 'status' => 0],
-    ['id' => 999, 'status' => 0],
-    ['id' => 999, 'status' => 0],
-    ['id' => 999, 'status' => 0],
-];
+$orders = database_orders_get_by_user_id($db, $userId);
 
 if ($user === null) {
     throw new Exception("User not found");
@@ -53,7 +48,9 @@ echo render_in_layout(function () use ($user, $orders) { ?>
                             </p>
                         </div>
                         <div class="flex">
-                            <a class="w-full sm:w-auto px-8 py-2 bg-sky-600 text-neutral-200 font-semibold rounded-lg text-center" href="<?= base_url('/orders/details.php', ['id' => $order['id']]) ?>">Zobacz szczegóły</a>
+                            <a class="w-full sm:w-auto px-8 py-2 bg-sky-600 text-neutral-200 font-semibold rounded-lg text-center"
+                               href="<?= base_url('/orders/details.php', ['id' => $order['id']]) ?>">Zobacz
+                                szczegóły</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
