@@ -24,7 +24,38 @@ if (session_has("user_edited")) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    // ...
+    $password = $_POST['password'] ?? null;
+    $newPassword = $_POST['new_password'] ?? null;
+    $newPasswordConfirmation = $_POST['new_password_confirmation'] ?? null;
+
+    if ($password === null) validation_errors_add("password", "Stare hasło nie może być puste.");
+    if ($newPassword === null) validation_errors_add("new_password", "Nowe hasło nie może być puste.");
+    if ($newPasswordConfirmation === null) validation_errors_add("new_password_confirmation", "Powtórzone hasło nie może być puste.");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    $db = get_db_connection();
+
+    $user = database_users_get_by_id($db, auth_get_user_id());
+
+    if (!password_verify($password, $user['password'])) {
+        validation_errors_add("password", "Stare hasło jest nieprawidłowe.");
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    if ($newPassword !== $newPasswordConfirmation) {
+        validation_errors_add("new_password_confirmation", "Powtórzone hasło nie jest takie samo jak nowe hasło.");
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+
+    db_transaction(function (mysqli $db) use ($user, $passwordHash) {
+        database_users_update($db, $user['id'], $user['email'], $passwordHash, $user['is_admin'], $user['is_verified']);
+    });
+
+    session_flash("user_edited", true);
+    redirect_and_kill($_SERVER['REQUEST_URI']);
 }
 
 $user = database_users_get_by_id(get_db_connection(), auth_get_user_id());
