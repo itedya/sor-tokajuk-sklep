@@ -132,6 +132,20 @@ function db_seed(mysqli $db): void
         );
     }
 
+    $addresses = require __DIR__ . '/../seeding/addresses-data.php';
+    foreach ($addresses as $address) {
+        db_execute_stmt(
+            $db,
+            "INSERT INTO addresses (id, user_id, first_line, second_line, city, postal_code) VALUES (?, ?, ?, ?, ?, ?)",
+            array_values($address)
+        );
+    }
+
+    $paymentTypes = require __DIR__ . '/../seeding/payment-types-data.php';
+    foreach ($paymentTypes as $paymentType) {
+        db_execute_stmt($db, "INSERT INTO payment_types (id, name) VALUES (?, ?)", array_values($paymentType));
+    }
+
     $categories = require __DIR__ . '/../seeding/categories-data.php';
     foreach ($categories as $category) {
         db_execute_stmt($db, "INSERT INTO categories (id, name) VALUES (?, ?)", array_values($category));
@@ -164,7 +178,7 @@ function db_seed(mysqli $db): void
     foreach ($orders as $order) {
         db_execute_stmt(
             $db,
-            "INSERT INTO orders (id, user_id, status, delivery_method_id) VALUES (?, ?, ?, ?)",
+            "INSERT INTO orders (id, user_id, address_id, payment_type_id, status, delivery_method_id) VALUES (?, ?, ?, ?, ?, ?)",
             array_values($order)
         );
     }

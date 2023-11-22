@@ -16,7 +16,9 @@ if ($user === null) {
     throw new Exception("User not found");
 }
 
-echo render_in_layout(function () use ($user, $orders) { ?>
+$addresses = database_addresses_get_by_user_id($db, $userId);
+
+echo render_in_layout(function () use ($user, $orders, $addresses) { ?>
     <div class="container mx-auto flex flex-col gap-8 p-4 text-neutral-200">
         <div class="flex flex-col gap-4 w-full">
             <div class="flex flex-col gap-2 text-center">

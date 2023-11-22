@@ -11,44 +11,21 @@ $orderId = intval($orderId);
 $db = get_db_connection();
 $order = database_orders_get_by_id($db, $_GET['id']);
 
+if ($order === null) abort(404);
+
 if ($order['user_id'] !== auth_get_user_id() && !auth_is_admin()) {
     abort(404);
 }
 
 $user = database_users_get_by_id($db, $order['user_id']);
 
-$address = [
-    'first_line' => 'ul. Wąwozowa 41b/22',
-    'city' => 'Wąwóz',
-    'postal_code' => '09-444'
-];
+$address = database_addresses_get_by_id_with_deleted($db, $order['address_id']);
 
-$deliveryMethod = [
-    'id' => 1,
-    'name' => 'Kurier',
-    'price' => 50.00
-];
+$deliveryMethod = database_delivery_method_get_by_id_with_deleted($db, $order['delivery_method_id']);
 
-$products = [
-    [
-        'id' => 1,
-        'name' => 'Trumna do gier',
-        'price' => 99.99,
-        'quantity' => 1
-    ],
-    [
-        'id' => 2,
-        'name' => 'Kwiaty',
-        'price' => 199.99,
-        'quantity' => 3
-    ]
-];
+$products = database_products_get_by_order_id($db, $orderId);
 
-//$payment = null;
-$payment = [
-    'id' => 1,
-    'name' => 'PayMedia'
-];
+$payment = database_payment_type_get_by_id_with_deleted($db, $order['payment_type_id']);
 
 echo render_in_layout(function () use ($order, $user, $address, $products, $deliveryMethod, $payment) { ?>
     <div class="container mx-auto flex flex-col gap-8 text-neutral-200 p-4 lg:grid lg:grid-cols-2 lg:auto-grid-rows">
@@ -108,7 +85,7 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
             </div>
 
             <div class="flex flex-row justify-between">
-                <p class="text-xl font-bold">Kurier</p>
+                <p class="text-xl font-bold"><?= $deliveryMethod['name'] ?></p>
                 <p class="text-xl"><?= $deliveryMethod['price'] ?> zł</p>
             </div>
 
@@ -123,7 +100,8 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
         </div>
 
         <div class="flex flex-row justify-end gap-2 lg:col-span-2">
-            <a class="px-4 py-2 bg-neutral-600 text-neutral-200 font-semibold rounded-lg text-center" href="<?= htmlspecialchars($_GET['previous_page'] ?? base_url('/client-panel/index.php')) ?>">
+            <a class="px-4 py-2 bg-neutral-600 text-neutral-200 font-semibold rounded-lg text-center"
+               href="<?= htmlspecialchars($_GET['previous_page'] ?? base_url('/client-panel/index.php')) ?>">
                 Wróć do poprzedniej strony
             </a>
         </div>

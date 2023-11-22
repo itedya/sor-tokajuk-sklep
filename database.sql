@@ -94,17 +94,46 @@ CREATE TABLE `delivery_methods`
     CONSTRAINT `uq_delivery_methods_name` UNIQUE KEY (`name`)
 );
 
+CREATE TABLE `addresses`
+(
+    `id`          int          NOT NULL AUTO_INCREMENT,
+    `user_id`     int          NOT NULL,
+    `first_line`  varchar(255) NOT NULL,
+    `second_line` varchar(255) NOT NULL,
+    `city`        varchar(255) NOT NULL,
+    `postal_code` varchar(255) NOT NULL,
+    `created_at`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `deleted_at`  datetime              DEFAULT NULL,
+
+    CONSTRAINT `pk_addresses_id` PRIMARY KEY (`id`),
+    CONSTRAINT `fk_addresses_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+);
+
+CREATE TABLE `payment_types`
+(
+    `id`         int          NOT NULL AUTO_INCREMENT,
+    `name`       varchar(255) NOT NULL,
+    `created_at` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `deleted_at` datetime              DEFAULT NULL,
+
+    CONSTRAINT `pk_payment_types_id` PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `orders`
 (
     `id`                 int      NOT NULL AUTO_INCREMENT,
     `user_id`            int      NOT NULL,
     `status`             int      NOT NULL,
     `delivery_method_id` int      NOT NULL,
+    `payment_type_id`    int      NOT NULL,
+    `address_id`         int      NOT NULL,
     `created_at`         datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `pk_orders_id` PRIMARY KEY (`id`),
     CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-    CONSTRAINT `fk_orders_delivery_method_id` FOREIGN KEY (`delivery_method_id`) REFERENCES `delivery_methods` (`id`)
+    CONSTRAINT `fk_orders_delivery_method_id` FOREIGN KEY (`delivery_method_id`) REFERENCES `delivery_methods` (`id`),
+    CONSTRAINT `fk_orders_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`),
+    CONSTRAINT `fk_orders_payment_type_id` FOREIGN KEY (`payment_type_id`) REFERENCES `payment_types` (`id`)
 );
 
 CREATE TABLE `orders_have_products`
