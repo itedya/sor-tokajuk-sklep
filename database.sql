@@ -146,3 +146,13 @@ CREATE TABLE `orders_have_products`
     CONSTRAINT `fk_orders_have_products_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
     CONSTRAINT `fk_orders_have_products_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 );
+
+CREATE TABLE `users_favourite_products`
+(
+    `user_id`    int NOT NULL,
+    `product_id` int NOT NULL,
+
+    CONSTRAINT `pk_users_favourite_products_user_id_product_id` PRIMARY KEY (`user_id`, `product_id`),
+    CONSTRAINT `fk_users_favourite_products_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+    CONSTRAINT `fk_users_favourite_products_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+)

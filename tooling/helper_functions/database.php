@@ -191,4 +191,13 @@ function db_seed(mysqli $db): void
             array_values($orderProduct)
         );
     }
+
+    $favouriteProducts = require __DIR__ . '/../seeding/favourite-products-data.php';
+    foreach ($favouriteProducts as $favouriteProduct) {
+        db_execute_stmt(
+            $db,
+            "INSERT INTO users_favourite_products (user_id, product_id) VALUES (?, ?)",
+            array_values($favouriteProduct)
+        );
+    }
 }

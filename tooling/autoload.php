@@ -12,6 +12,7 @@ require_once __DIR__ . "/helper_functions/database_orders.php";
 require_once __DIR__ . "/helper_functions/database_delivery_method.php";
 require_once __DIR__ . "/helper_functions/database_products.php";
 require_once __DIR__ . "/helper_functions/database_payment_types.php";
+require_once __DIR__ . "/helper_functions/database_favourite_products.php";
 require_once __DIR__ . "/helper_functions/database_addresses.php";
 require_once __DIR__ . "/helper_functions/gates.php";
 require_once __DIR__ . "/helper_functions/get_query_params.php";

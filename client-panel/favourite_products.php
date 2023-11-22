@@ -5,12 +5,22 @@ require_once __DIR__ . '/../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    // ...
+    $id = $_GET['id'] ?? null;
+
+    if ($id === null) {
+        redirect_and_kill($_SERVER['REQUEST_URI']);
+    }
+
+    $db = get_db_connection();
+
+    database_favourite_products_delete_by_user_id_and_product_id($db, auth_get_user_id(), $id);
+
+    redirect_and_kill($_SERVER['REQUEST_URI']);
 }
 
 $db = get_db_connection();
 
-$products = [];
+$products = database_favourite_products_get_by_user_id_with_image($db, auth_get_user_id());
 
 ob_start(); ?>
     <style type="text/tailwindcss">
