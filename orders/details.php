@@ -121,5 +121,11 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
                 </p>
             </div>
         </div>
+
+        <div class="flex flex-row justify-end gap-2 lg:col-span-2">
+            <a class="px-4 py-2 bg-neutral-600 text-neutral-200 font-semibold rounded-lg text-center" href="<?= htmlspecialchars($_GET['previous_page'] ?? base_url('/client-panel/index.php')) ?>">
+                Wróć do poprzedniej strony
+            </a>
+        </div>
     </div>
 <?php });
