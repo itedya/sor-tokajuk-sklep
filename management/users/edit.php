@@ -5,6 +5,22 @@ require_once __DIR__ . '/../../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
+if (session_has("user_edited")) {
+    echo render_in_layout(function () { ?>
+        <div class="container p-4 flex flex-col gap-8 mx-auto">
+            <h2 class="text-3xl text-center text-neutral-300">Użytkownik został zaktualizowany.</h2>
+            <div class="flex justify-center items-center">
+                <a href="<?= config("app.url") . "/management/users.php" ?>"
+                   class="px-8 py-2 bg-blue-600 text-neutral-200 font-semibold rounded-lg">
+                    Powrót do użytkowników
+                </a>
+            </div>
+        </div>
+    <?php });
+
+    redirect_and_kill($_SERVER['REQUEST_URI']);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $id = $_POST['id'] ?? null;
     $email = $_POST['email'] ?? null;
