@@ -34,7 +34,11 @@ echo render_in_layout(function () use ($user) { ?>
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
                     class="py-4 px-6 text-neutral-300 text-left">Ulubione produkty</button>
-            <button class="py-4 px-6 text-neutral-300 text-left">Zamówienia</button>
+            <button hx-get="<?= base_url("/client-panel/orders.php") ?>"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                    hx-target="#swappable-panel"
+                    class="py-4 px-6 text-neutral-300 text-left">Zamówienia</button>
             <button class="py-4 px-6 text-neutral-300 text-left">Adresy</button>
         </div>
 
