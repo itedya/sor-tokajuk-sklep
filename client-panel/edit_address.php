@@ -19,10 +19,25 @@ if ($address['user_id'] !== auth_get_user_id() && !auth_is_admin()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // ...
+    foreach ($_POST as $key => $value) old_input_add($key, $value);
+
+    $firstLine = $_POST['first_line'] ?? null;
+    $secondLine = $_POST['second_line'] ?? null;
+    $city = $_POST['city'] ?? null;
+    $postalCode = $_POST['postal_code'] ?? null;
+
+    if ($firstLine === null) validation_errors_add('first_line', 'Pole jest wymagane');
+    if ($secondLine === null) validation_errors_add('second_line', 'Pole jest wymagane');
+    if ($city === null) validation_errors_add('city', 'Pole jest wymagane');
+    if ($postalCode === null) validation_errors_add('postal_code', 'Pole jest wymagane');
+
+    database_addresses_update_by_id($db, $id, $firstLine, $secondLine, $city, $postalCode);
+
+    redirect_and_kill(base_url("/client-panel/addresses.php"));
 }
 
 if (!old_input_has('first_line')) old_input_add('first_line', $address['first_line']);
+if (!old_input_has('second_line')) old_input_add('second_line', $address['second_line']);
 if (!old_input_has('city')) old_input_add('city', $address['city']);
 if (!old_input_has('postal_code')) old_input_add('postal_code', $address['postal_code']);
 
@@ -34,8 +49,13 @@ ob_start(); ?>
 
         <form action="<?= $_SERVER['REQUEST_URI'] ?>" method="POST" class="flex flex-col gap-4 overflow-x-auto w-full">
             <?= render_textfield(
-                label: 'Adres',
+                label: 'Pierwsza linia adresu',
                 name: 'first_line'
+            ) ?>
+
+            <?= render_textfield(
+                label: 'Druga linia adresu',
+                name: 'second_line'
             ) ?>
 
             <?= render_textfield(
