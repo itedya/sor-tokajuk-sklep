@@ -39,7 +39,11 @@ echo render_in_layout(function () use ($user) { ?>
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
                     class="py-4 px-6 text-neutral-300 text-left">Zamówienia</button>
-            <button class="py-4 px-6 text-neutral-300 text-left">Adresy</button>
+            <button hx-get="<?= base_url("/client-panel/addresses.php") ?>"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                    hx-target="#swappable-panel"
+                    class="py-4 px-6 text-neutral-300 text-left">Adresy</button>
         </div>
 
         <div id="swappable-panel" class="md:col-span-2 md:row-span-2 lg:col-span-3 w-full justify-self-center border border-neutral-700 rounded-xl p-4 md:p-8"></div>
