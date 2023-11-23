@@ -30,6 +30,14 @@ ob_start(); ?>
         </div>
 
         <div class="flex flex-col gap-2 overflow-x-auto w-full">
+            <div class="flex flex-row justify-end items-center w-full">
+                <button hx-get="<?= htmlspecialchars(base_url("/client-panel/create_address.php")) ?>"
+                        hx-trigger="click" hx-swap="innerHTML" hx-target="#swappable-panel"
+                        class="px-8 py-2 rounded-xl text-neutral-200 bg-green-600 font-semibold">
+                    Dodaj
+                </button>
+            </div>
+
             <?php
             $addressesHtml = render_table(
                 ["Adres", "Miasto", "Kod pocztowy", "", ""],
