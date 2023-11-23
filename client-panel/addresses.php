@@ -5,7 +5,18 @@ require_once __DIR__ . '/../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    // ...
+    $id = $_GET['id'] ?? null;
+    if ($id === null) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    $db = get_db_connection();
+
+    $address = database_addresses_get_by_id($db, $id);
+    if ($address === null) redirect_and_kill($_SERVER['REQUEST_URI']);
+    if ($address['user_id'] !== auth_get_user_id()) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    database_addresses_delete_by_id($db, $id);
+
+    redirect_and_kill($_SERVER['REQUEST_URI']);
 }
 
 $db = get_db_connection();
