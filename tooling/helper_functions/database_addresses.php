@@ -24,3 +24,8 @@ function database_addresses_update_by_id(mysqli $db, int $id, string $firstLine,
 {
     db_execute_stmt($db, "UPDATE addresses SET first_line = ?, second_line = ?, city = ?, postal_code = ? WHERE id = ?", [$firstLine, $secondLine, $city, $postalCode, $id]);
 }
+
+function database_addresses_create(mysqli $db, int $userId, string $firstLine, string $secondLine, string $city, string $postalCode): void
+{
+    db_execute_stmt($db, "INSERT INTO addresses (user_id, first_line, second_line, city, postal_code) VALUES (?, ?, ?, ?, ?)", [$userId, $firstLine, $secondLine, $city, $postalCode]);
+}

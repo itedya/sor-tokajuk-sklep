@@ -7,7 +7,41 @@ gate_redirect_if_unauthorized();
 $db = get_db_connection();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // ...
+    foreach ($_POST as $key => $value) old_input_add($key, $value);
+
+    $firstLine = $_POST['first_line'] ?? null;
+    $secondLine = $_POST['second_line'] ?? null;
+    $city = $_POST['city'] ?? null;
+    $postalCode = $_POST['postal_code'] ?? null;
+
+    if ($firstLine === null) validation_errors_add('first_line', 'Pole jest wymagane');
+    if ($secondLine === null) validation_errors_add('second_line', 'Pole jest wymagane');
+    if ($city === null) validation_errors_add('city', 'Pole jest wymagane');
+    if ($postalCode === null) validation_errors_add('postal_code', 'Pole jest wymagane');
+
+    if (!validation_errors_is_empty()) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    $firstLine = trim($firstLine);
+    $secondLine = trim($secondLine);
+    $city = trim($city);
+    $postalCode = trim($postalCode);
+
+    if (strlen($firstLine) > 255) validation_errors_add('first_line', 'Pole może zawierać maksymalnie 255 znaków');
+    if (strlen($secondLine) > 255) validation_errors_add('second_line', 'Pole może zawierać maksymalnie 255 znaków');
+    if (strlen($city) > 255) validation_errors_add('city', 'Pole może zawierać maksymalnie 255 znaków');
+    if (strlen($postalCode) > 255) validation_errors_add('postal_code', 'Pole może zawierać maksymalnie 255 znaków');
+
+    if (!validation_errors_is_empty()) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    if (strlen($firstLine) < 3) validation_errors_add('first_line', 'Pole musi zawierać minimum 3 znaki');
+    if (strlen($city) < 3) validation_errors_add('city', 'Pole musi zawierać minimum 3 znaki');
+    if (strlen($postalCode) < 3) validation_errors_add('postal_code', 'Pole musi zawierać minimum 3 znaki');
+
+    if (!validation_errors_is_empty()) redirect_and_kill($_SERVER['REQUEST_URI']);
+
+    database_addresses_create($db, auth_get_user_id(), $firstLine, $secondLine, $city, $postalCode);
+
+    redirect_and_kill(base_url("/client-panel/addresses.php"));
 }
 
 ob_start(); ?>
