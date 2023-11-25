@@ -46,6 +46,8 @@ echo render_in_layout(function () use ($user) { ?>
                     class="py-4 px-6 text-neutral-300 text-left">Adresy</button>
         </div>
 
-        <div id="swappable-panel" class="md:col-span-2 md:row-span-2 lg:col-span-3 w-full justify-self-center border border-neutral-700 rounded-xl p-4 md:p-8"></div>
+        <div id="swappable-panel" class="md:col-span-2 md:row-span-2 lg:col-span-3 w-full justify-self-center border border-neutral-700 rounded-xl p-4 md:p-8">
+                <?php require __DIR__ . "/edit.php"; ?>
+        </div>
     </div>
 <?php });

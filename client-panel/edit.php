@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if ($email === null) validation_errors_add("email", "Email nie może być pusty.");
 
     if (!validation_errors_is_empty()) {
-        redirect_and_kill($_SERVER['REQUEST_URI']);
+        redirect_and_kill(base_url('/client-panel/edit.php'));
     }
 
     db_transaction(function (mysqli $db) use ($email) {
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     });
 
     session_flash("user_edited", true);
-    redirect_and_kill($_SERVER['REQUEST_URI']);
+    redirect_and_kill(base_url('/client-panel/edit.php'));
 }
 
 $user = database_users_get_by_id(get_db_connection(), auth_get_user_id());
@@ -61,7 +61,7 @@ ob_start(); ?>
         </form>
 
         <div class="flex flex-row justify-end items-center gap-4">
-            <button hx-post="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>"
+            <button hx-post="<?= htmlspecialchars(base_url('/client-panel/edit.php')) ?>"
                     hx-trigger="click"
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
