@@ -2,7 +2,7 @@
 
 function render_table(array $columns, array $rows): string
 {
-    $columnClasses = join(' ', ['bg-neutral-800', 'text-left', 'font-normal', 'p-2', 'whitespace-nowrap']);
+    $columnClasses = join(' ', ['bg-neutral-800', 'text-left', 'font-normal', 'p-2', 'whitespace-nowrap', 'text-neutral-200']);
     $valueClasses = join(' ', ['border-t', 'border-neutral-700', 'bg-neutral-900', 'p-2', 'text-neutral-400']);
 
     ob_start(); ?>
@@ -28,7 +28,7 @@ function render_table(array $columns, array $rows): string
             <?php foreach ($rows as $row): ?>
                 <tr>
                     <?php foreach ($row as $field): ?>
-                        <td class="<?= $valueClasses ?>"><?= $field['value'] ?></td>
+                        <td class="<?= $valueClasses ?>"><?= ($field['is_html'] ?? false) ? $field['value'] : htmlspecialchars($field['value']) ?></td>
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
