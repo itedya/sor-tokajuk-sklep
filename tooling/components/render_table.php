@@ -2,17 +2,22 @@
 
 function render_table(array $columns, array $rows): string
 {
-    $columnClasses = join(' ', ['border', 'border-neutral-700', 'bg-neutral-800', 'text-left', 'font-normal', 'p-2', 'whitespace-nowrap']);
-    $valueClasses = join(' ', ['border', 'border-neutral-700', 'bg-neutral-900', 'p-2', 'text-neutral-400']);
+    $columnClasses = join(' ', ['bg-neutral-800', 'text-left', 'font-normal', 'p-2', 'whitespace-nowrap']);
+    $valueClasses = join(' ', ['border-t', 'border-neutral-700', 'bg-neutral-900', 'p-2', 'text-neutral-400']);
 
     ob_start(); ?>
     <div class="overflow-x-auto w-full">
-        <table class="border-collapse border border-neutral-700 bg-neutral-800 w-full">
+        <table class="table-auto bg-neutral-800 w-full border-separate border-spacing-0 rounded-xl border border-neutral-700">
             <?php if (count($columns) !== 0): ?>
                 <thead>
                 <tr>
-                    <?php foreach ($columns as $column): ?>
-                        <th class="<?= $columnClasses ?>">
+                    <?php 
+                        foreach ($columns as $index => $column):
+                            $tempColumnClasses = $columnClasses;
+                            if ($index === 0) $tempColumnClasses .= " rounded-tl-xl";
+                            if ($index === count($columns) - 1) $tempColumnClasses .= " rounded-tr-xl";
+                    ?>
+                        <th class="<?= $tempColumnClasses ?>">
                             <?= $column ?>
                         </th>
                     <?php endforeach; ?>
@@ -30,5 +35,5 @@ function render_table(array $columns, array $rows): string
             </tbody>
         </table>
     </div>
-    <?php return ob_get_clean();
+<?php return ob_get_clean();
 }
