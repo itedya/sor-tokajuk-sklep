@@ -27,7 +27,7 @@ echo render_in_layout(function() use ($rows) { ?>
 
         <div class="flex flex-row justify-end items-center">
         <a class="px-4 py-2 bg-green-600 text-neutral-200 font-semibold rounded-lg text-center"
-           href="<?= base_url('/management/payment_methods/create.php') ?>">Dodaj nową metodę</a>
+           href="<?= base_url('/management/payment-types/create.php') ?>">Dodaj nową metodę</a>
         </div>
     </div>
 </div>
