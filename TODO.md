@@ -21,8 +21,8 @@
 
 # [ ] Część III - Grudzień
 
-- [ ] Panel klienta (dostępny po zalogowaniu), a w nim:
-    - [ ] możliwość edycji swoich danych osobowych i danych do wysyłki (adres wysyłki może być inny niż dane klienta)
+- [x] Panel klienta (dostępny po zalogowaniu), a w nim:
+    - [x] możliwość edycji swoich danych osobowych i danych do wysyłki (adres wysyłki może być inny niż dane klienta)
     - [x] możliwość przeglądania historii swoich zamówień
     - [x] możliwość tworzenia listy produktów ulubionych
 - [ ] Katalog produktów z możliwością wyszukiwania produktów po różnych parametrach. Z katalogu produktów można
