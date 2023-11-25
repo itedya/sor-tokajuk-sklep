@@ -86,7 +86,10 @@ function db_migrate(mysqli $db): void
     $sql = file_get_contents(__DIR__ . '/../../database.sql');
 
     $queries = explode(";", $sql);
-    $queries = array_filter($queries, fn($query) => $query !== "");
+    $queries = array_filter($queries, fn($query) => !empty($query));
+    $queries = array_map(fn($query) => str_replace("\n", '', $query), $queries);
+    $queries = array_filter($queries, fn($query) => !empty($query));
+
 
     foreach ($queries as $query) {
         db_execute_stmt($db, $query, []);
@@ -178,7 +181,7 @@ function db_seed(mysqli $db): void
     foreach ($orders as $order) {
         db_execute_stmt(
             $db,
-            "INSERT INTO orders (id, user_id, address_id, payment_type_id, status, delivery_method_id) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO orders (id, user_id, address_id, payment_type_id, status, delivery_method_id, delivery_address_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
             array_values($order)
         );
     }

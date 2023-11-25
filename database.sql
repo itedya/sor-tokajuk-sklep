@@ -121,13 +121,14 @@ CREATE TABLE `payment_types`
 
 CREATE TABLE `orders`
 (
-    `id`                 int      NOT NULL AUTO_INCREMENT,
-    `user_id`            int      NOT NULL,
-    `status`             int      NOT NULL,
-    `delivery_method_id` int      NOT NULL,
-    `payment_type_id`    int      NOT NULL,
-    `address_id`         int      NOT NULL,
-    `created_at`         datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id`                  int      NOT NULL AUTO_INCREMENT,
+    `user_id`             int      NOT NULL,
+    `status`              int      NOT NULL,
+    `delivery_method_id`  int      NOT NULL,
+    `delivery_address_id` int      NOT NULL,
+    `payment_type_id`     int      NOT NULL,
+    `address_id`          int      NOT NULL,
+    `created_at`          datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `pk_orders_id` PRIMARY KEY (`id`),
     CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
@@ -155,4 +156,4 @@ CREATE TABLE `users_favourite_products`
     CONSTRAINT `pk_users_favourite_products_user_id_product_id` PRIMARY KEY (`user_id`, `product_id`),
     CONSTRAINT `fk_users_favourite_products_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     CONSTRAINT `fk_users_favourite_products_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-)
+);
