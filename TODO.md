@@ -23,8 +23,8 @@
 
 - [ ] Panel klienta (dostępny po zalogowaniu), a w nim:
     - [ ] możliwość edycji swoich danych osobowych i danych do wysyłki (adres wysyłki może być inny niż dane klienta)
-    - [ ] możliwość przeglądania historii swoich zamówień
-    - [ ] możliwość tworzenia listy produktów ulubionych
+    - [x] możliwość przeglądania historii swoich zamówień
+    - [x] możliwość tworzenia listy produktów ulubionych
 - [ ] Katalog produktów z możliwością wyszukiwania produktów po różnych parametrach. Z katalogu produktów można
   bezpośrednio dodać produkt do koszyka lub do listy ulubionych (tylko dla zalogowanych użytkowników)
 - [ ] Karta produktu, na której są prezentowane szczegóły produktu wraz z galerią zdjęć produktów. Z poziomu karty
