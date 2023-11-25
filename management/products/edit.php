@@ -539,6 +539,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             foreach ($editSessionData['images'] as $image) {
                 db_execute_stmt($db, "INSERT INTO products_images (product_id, image) VALUES (?, ?)", [$id, $image]);
             }
+
+            clear_unused_categories($db);
+            clear_unused_images($db);
+            clear_unused_parameters($db);
         });
 
         session_flash("after_product_edit", true);

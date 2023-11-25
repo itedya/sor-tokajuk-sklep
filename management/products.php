@@ -134,6 +134,13 @@ echo render_in_layout(function () use ($products) { ?>
             Produkty
         </div>
 
+        <div class="flex flex-row justify-end items-center gap-4">
+            <a href="<?= config("app.url") . "/management/products/create.php" ?>"
+               class="px-8 py-2 bg-green-600 text-neutral-200 font-semibold rounded-lg">
+                Dodaj
+            </a>
+        </div>
+
         <div class="grid grid-cols-1 auto-grid-rows gap-8 xl:grid-cols-2">
             <?php foreach ($products as $product): ?>
                 <div class="item">
