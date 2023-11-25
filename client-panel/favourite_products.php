@@ -134,6 +134,8 @@ ob_start(); ?>
             <div class="text-3xl text-center text-neutral-300 p-4">
                 Nie masz żadnych ulubionych produktów.
             </div>
+        <?php else: ?>
+            <h2 class="text-3xl font-bold text-center">Ulubione produkty</h2>
         <?php endif; ?>
 
         <?php foreach ($products as $product): ?>
