@@ -6,7 +6,7 @@ gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
 $db = get_db_connection();
-$rows = [];
+$rows = database_payment_types_get($db);
 $db->close();
 
 echo render_in_layout(function() use ($rows) { ?>
