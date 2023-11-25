@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     db_transaction(function(mysqli $db) use ($name) {
         if (database_payment_types_does_exist_by_name($db, $name)) {
             validation_errors_add("name", "Metoda płatności o tej nazwie już istnieje!");
-            redirect_and_kill($_SERVER['REQUEST_URI']);       
+            redirect_and_kill($_SERVER['REQUEST_URI']);
         }
 
         database_payment_types_create($db, $name);
