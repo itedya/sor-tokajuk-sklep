@@ -21,13 +21,15 @@ $user = database_users_get_by_id($db, $order['user_id']);
 
 $address = database_addresses_get_by_id_with_deleted($db, $order['address_id']);
 
+$deliveryAddress = database_addresses_get_by_id_with_deleted($db, $order['delivery_address_id']);
+
 $deliveryMethod = database_delivery_method_get_by_id_with_deleted($db, $order['delivery_method_id']);
 
 $products = database_products_get_by_order_id($db, $orderId);
 
 $payment = database_payment_type_get_by_id_with_deleted($db, $order['payment_type_id']);
 
-echo render_in_layout(function () use ($order, $user, $address, $products, $deliveryMethod, $payment) { ?>
+echo render_in_layout(function () use ($order, $user, $address, $products, $deliveryMethod, $payment, $deliveryAddress) { ?>
     <div class="container mx-auto flex flex-col gap-8 text-neutral-200 p-4 lg:grid lg:grid-cols-2 lg:auto-grid-rows">
         <div class="flex flex-col gap-2 text-center lg:col-span-2">
             <h2 class="text-3xl font-bold">Szczegóły zamówienia</h2>
@@ -50,6 +52,26 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
                 [
                     ['type' => 'COLUMN', 'value' => 'Zamówione przez'],
                     ['type' => 'ROW', 'value' => $user['email']]
+                ],
+                [
+                    ['type' => 'COLUMN', 'value' => 'Adres dostawy'],
+                    ['type' => 'ROW', 'value' => '']
+                ],
+                [
+                    ['type' => 'COLUMN', 'value' => 'Adres'],
+                    ['type' => 'ROW', 'value' => $deliveryAddress['first_line']]
+                ],
+                [
+                    ['type' => 'COLUMN', 'value' => 'Miasto'],
+                    ['type' => 'ROW', 'value' => $deliveryAddress['city']]
+                ],
+                [
+                    ['type' => 'COLUMN', 'value' => 'Kod pocztowy'],
+                    ['type' => 'ROW', 'value' => $deliveryAddress['postal_code']]
+                ],
+                [
+                    ['type' => 'COLUMN', 'value' => 'Adres rozliczeniowy'],
+                    ['type' => 'ROW', 'value' => ''],
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Adres'],
