@@ -13,8 +13,8 @@
   lub przypisywania do nich notatek.
 - [ ] System zarządzania zamówieniami. Należy pamiętać, że w sklepie mogą składać zamówienia nie tylko klienci z
   zarejestrowanym w sklepie kontem ale też klienci bez konta.
-- [ ] System zarządzania sposobami o kosztami dostawy.
-- [ ] System zarządzania sposobami płatności.
+- [ ] System zarządzania sposobami i kosztami dostawy.
+- [x] System zarządzania sposobami płatności.
 - [ ] Możliwość dodawania do sklepu z poziomu panelu administratora podstron informacyjnych takich jak regulamin, strona
   o nas, sposoby dostawy i inne dowolne podstrony, do których linki będą pojawiały się w menu sklepu i których treść
   będzie można edytować z poziomu panelu administratora.
@@ -32,3 +32,6 @@
 - [ ] Koszyk na zakupy
 - [ ] Proces zakupowy, w którym klient może wybrać rodzaj przesyłki, sposób płatności i podać niezbędne dane do zakupu.
   Ważne: w sklepie mogą robić zakupy zarówno klienci zarejestrowani jak i klienci nie posiadający konta w klepie.
+
+# [ ] Część IV - Quality Check
+ - [ ] Naprawa wszystkich bad spellingów oraz liczb mnogich i pojedyńczych czy są dobrze powstawiane
