@@ -16,7 +16,7 @@ echo render_in_layout(function() use ($rows) { ?>
 
         <div class="flex flex-col gap-4">
             <?= render_table(['Nazwa', ''], array_map(function ($row) {
-                $deleteUrl = base_url('management/payment_methods/delete.php', ['id' => $row['id']]);
+                $deleteUrl = base_url('management/payment-types/delete.php', ['id' => $row['id']]);
 
                 return [
                     ['value' => $row['name']],
