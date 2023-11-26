@@ -13,7 +13,7 @@
   lub przypisywania do nich notatek.
 - [ ] System zarządzania zamówieniami. Należy pamiętać, że w sklepie mogą składać zamówienia nie tylko klienci z
   zarejestrowanym w sklepie kontem ale też klienci bez konta.
-- [ ] System zarządzania sposobami i kosztami dostawy.
+- [x] System zarządzania sposobami i kosztami dostawy.
 - [x] System zarządzania sposobami płatności.
 - [ ] Możliwość dodawania do sklepu z poziomu panelu administratora podstron informacyjnych takich jak regulamin, strona
   o nas, sposoby dostawy i inne dowolne podstrony, do których linki będą pojawiały się w menu sklepu i których treść
