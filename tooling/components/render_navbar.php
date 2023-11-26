@@ -7,9 +7,10 @@ function render_navbar()
     if (auth_is_logged_in()) {
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
+            ['href' => '/client-panel/index.php', 'text' => 'Panel klienta'],
             ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
             ['href' => '/management/payment-types.php', 'text' => 'Zarządzaj sposobami płatności'],
-            ['href' => '/client-panel/index.php', 'text' => 'Panel klienta'],
+            ['href' => '/management/delivery-methods.php', 'text' => 'Zarządzaj sposobami dostawy'],
             ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
             ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
         ];
@@ -30,7 +31,7 @@ function render_navbar()
 
                 <div class="hidden xl:flex flex-row">
                     <?php foreach ($elements as $element): ?>
-                        <a class="text-xl text-neutral-300 p-8 h-full" href="<?= htmlspecialchars($element['href']) ?>">
+                        <a class="text-sm text-neutral-300 px-2 py-4 h-full" href="<?= htmlspecialchars($element['href']) ?>">
                             <?= htmlspecialchars($element['text']) ?>
                         </a>
                     <?php endforeach; ?>
