@@ -13,6 +13,10 @@ if (!is_numeric($id)) redirect_and_kill($backUrl);
 
 $id = intval($id);
 
+$db = get_db_connection();
+if (database_delivery_methods_get_by_id($db, $id) === null) redirect_and_kill($backUrl);
+$db->close();
+
 echo render_in_layout(function () use ($backUrl, $id) { ?>
     <div class="container mx-auto">
         <div class="flex flex-col gap-4 justify-center items-center">
