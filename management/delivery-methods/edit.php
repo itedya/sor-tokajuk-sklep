@@ -8,6 +8,20 @@ gate_redirect_if_not_an_admin();
 $backUrl = $_GET['back_url'] ?? base_url('/management/delivery-methods.php');
 if (!is_array(parse_url($backUrl))) redirect_and_kill(base_url('/management/delivery-methods.php'));
 
+if (session_has('after_delivery_method_update')) {
+    ?>
+        <div class="flex flex-col gap-4 justify-center items-center">
+            <h2 class="text-3xl text-center text-neutral-300 font-bold">Sukces</h2>
+
+            <p class="text-neutral-200">Pomyślnie zapisano zmiany w sposobie dostawy.</p>
+
+            <a href="<?= htmlspecialchars($backUrl) ?>" 
+                class="px-8 py-2 text-neutral-200 bg-blue-600 rounded-xl font-bold">Wróć do listy sposobów dostawy</a>
+        </div>
+    <?php
+    die();
+}
+
 $id = $_GET['id'] ?? null;
 if ($id === null) redirect_and_kill($backUrl);
 if (!is_numeric($id)) redirect_and_kill($backUrl);
@@ -51,7 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         database_delivery_methods_update($db, $id, $name, $price);
     });
 
-    redirect_and_kill($backUrl);
+    session_flash('after_delivery_method_update', true);
+    redirect_and_kill($validationErrorUrl);
 } else {
     if (!old_input_has("name")) old_input_add("name", $data['name']);
     if (!old_input_has("price")) old_input_add("price", $data['price']);
