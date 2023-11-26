@@ -3,10 +3,6 @@
 **Wersja PHP**: 8.2.10  
 **Wersja MySQL**: 8.0  
 
-## Testy manualne
-
-Lista wykonanych i oczekujących na wykonanie testów manualnych dostępna w pliku `MANUAL_TESTING.md`
-
 ## Lista rzeczy do zrobienia
 
 - [x] Część I - Wrzesień
@@ -42,4 +38,4 @@ Lista wykonanych i oczekujących na wykonanie testów manualnych dostępna w pli
 
 - [ ] Część IV - Quality Check
   - [ ] Naprawa wszystkich bad spellingów oraz liczb mnogich i pojedyńczych czy są dobrze powstawiane
-
+  - [ ] \(w miarę możliwości) testy manualne
