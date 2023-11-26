@@ -14,7 +14,7 @@ echo render_in_layout(function() use ($rows) { ?>
         <div class="flex flex-col max-w-3xl mx-auto gap-8">
             <h2 class="text-3xl font-bold text-neutral-300 text-center">Zarządzanie sposobami dostawy</h2>
             <?= render_table(['Nazwa', 'Cena', '', ''], array_map(function ($row) {
-                $deleteUrl = base_url('/management/delivery-methods/delete.php', ['id' => $row['id']]);
+                $deleteUrl = base_url('/management/delivery-methods/delete.php', ['id' => $row['id'], 'back_url' => $_SERVER['REQUEST_URI']]);
                 $editUrl = base_url('/management/delivery-methods/edit.php', ['id' => $row['id']]);
 
                 return [
