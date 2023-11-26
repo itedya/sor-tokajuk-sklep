@@ -2,7 +2,6 @@
 
 **Wersja PHP**: 8.2.10  
 **Wersja MySQL**: 8.0  
-**Proponowana wersja XAMPP:** 8.2.4 (lub wyżej)  
 
 ## Testy manualne
 
