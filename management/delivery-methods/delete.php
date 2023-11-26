@@ -6,6 +6,7 @@ gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
 $backUrl = $_GET['back_url'] ?? base_url('/management/delivery-methods.php');
+if (!is_array(parse_url($backUrl))) redirect_and_kill(base_url('/management/delivery-methods.php'));
 
 $id = $_GET['id'] ?? null;
 if ($id === null) redirect_and_kill($backUrl);
