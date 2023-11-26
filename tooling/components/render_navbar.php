@@ -8,11 +8,13 @@ function render_navbar()
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
             ['href' => '/client-panel/index.php', 'text' => 'Panel klienta'],
-            ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
-            ['href' => '/management/payment-types.php', 'text' => 'Zarządzaj sposobami płatności'],
-            ['href' => '/management/delivery-methods.php', 'text' => 'Zarządzaj sposobami dostawy'],
-            ['href' => '/management/additional-pages.php', 'text' => 'Zarządzaj dodatkowymi stronami'],
-            ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
+            ['dropdown' => true, 'name' => 'Zarządzanie', 'items' => [
+                ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
+                ['href' => '/management/payment-types.php', 'text' => 'Zarządzaj sposobami płatności'],
+                ['href' => '/management/delivery-methods.php', 'text' => 'Zarządzaj sposobami dostawy'],
+                ['href' => '/management/additional-pages.php', 'text' => 'Zarządzaj dodatkowymi stronami'],
+                ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
+            ]],
             ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
         ];
     } else {
@@ -32,9 +34,22 @@ function render_navbar()
 
                 <div class="hidden xl:flex flex-row">
                     <?php foreach ($elements as $element): ?>
-                        <a class="text-sm text-neutral-300 px-2 py-4 h-full" href="<?= htmlspecialchars($element['href']) ?>">
-                            <?= htmlspecialchars($element['text']) ?>
-                        </a>
+                        <?php if (($element['dropdown'] ?? false) === true): ?>
+                            <div class="text-sm text-neutral-300 px-2 py-4 relative" data-dropdown>
+                                <button data-dropdown-button><?= htmlspecialchars($element['name']) ?></button>
+                                <div class="absolute top-12 -right-2 divide-y divide-zinc-700 border border-zinc-700 rounded-xl shadow-lg bg-zinc-900 opacity-0 min-w-5xl" data-dropdown-links>
+                                    <?php foreach ($element['items'] as $dropdownElement): ?>
+                                        <a class="block text-sm text-neutral-300 whitespace-nowrap p-2" href="<?= htmlspecialchars($dropdownElement['href']) ?>">
+                                            <?= htmlspecialchars($dropdownElement['text']) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <a class="text-sm text-neutral-300 px-2 py-4 h-full" href="<?= htmlspecialchars($element['href']) ?>">
+                                <?= htmlspecialchars($element['text']) ?>
+                            </a>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
 
@@ -51,10 +66,19 @@ function render_navbar()
         <div class="xl:hidden">
             <div class="fixed top-0 left-0 z-30 bg-zinc-900 mt-20 flex flex-col w-full hidden" id="navbarItems">
                 <?php foreach ($elements as $element): ?>
-                    <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800"
-                       href="<?= htmlspecialchars($element['href']) ?>">
-                        <?= htmlspecialchars($element['text']) ?>
-                    </a>
+                    <?php if (($element['dropdown'] ?? false) === true): ?>
+                        <?php foreach ($element['items'] as $dropdownElement): ?>
+                            <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800"
+                               href="<?= htmlspecialchars($dropdownElement['href']) ?>">
+                                <?= htmlspecialchars($dropdownElement['text']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <a class="text-xl text-neutral-300 border-b border-zinc-700 w-full p-4 hover:bg-zinc-800"
+                           href="<?= htmlspecialchars($element['href']) ?>">
+                            <?= htmlspecialchars($element['text']) ?>
+                        </a>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -68,6 +92,23 @@ function render_navbar()
 
             const navbarItemsTrigger = document.querySelector("#navbarItemsTrigger");
             navbarItemsTrigger.addEventListener("click", triggerMobileNavbar);
+
+            document.addEventListener("click", e => {
+                const isDropdownButton = e.target.matches("[data-dropdown-button]")
+                if (!isDropdownButton && e.target.closest("[data-dropdown]") != null) return
+
+                let currentDropdown
+                if (isDropdownButton) {
+                    currentDropdown = e.target.parentNode.querySelector("[data-dropdown-links]")
+                    currentDropdown.classList.toggle("active")
+                    currentDropdown.classList.toggle("opacity-0")
+                }
+
+                document.querySelectorAll("[data-dropdown-links].active").forEach(dropdown => {
+                    if (dropdown === currentDropdown) return
+                    dropdown.classList.add("opacity-0")
+                })
+            }) 
         </script>
     </div>
     <?php
