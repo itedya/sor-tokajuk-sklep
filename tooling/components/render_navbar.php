@@ -11,6 +11,7 @@ function render_navbar()
             ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
             ['href' => '/management/payment-types.php', 'text' => 'Zarządzaj sposobami płatności'],
             ['href' => '/management/delivery-methods.php', 'text' => 'Zarządzaj sposobami dostawy'],
+            ['href' => '/management/additional-pages.php', 'text' => 'Zarządzaj dodatkowymi stronami'],
             ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
             ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
         ];
