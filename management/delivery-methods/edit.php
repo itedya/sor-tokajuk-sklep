@@ -15,8 +15,48 @@ if (!is_numeric($id)) redirect_and_kill($backUrl);
 $id = intval($id);
 
 $db = get_db_connection();
-if (database_delivery_methods_get_by_id($db, $id) === null) redirect_and_kill($backUrl);
+$data = database_delivery_methods_get_by_id($db, $id);
+if ($data === null) redirect_and_kill($backUrl);
 $db->close();
+
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    foreach ($_POST as $key => $value) old_input_add($key, $value);
+
+    $validationErrorUrl = base_url('/management/delivery-methods/edit.php', ['id' => $id, 'render_without_layout' => 1, 'back_url' => $backUrl]);
+
+    if (!isset($_POST['name'])) validation_errors_add("name", "Nazwa jest wymagana");
+    if (!isset($_POST['price'])) validation_errors_add("price", "Cena jest wymagana");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($validationErrorUrl);
+
+    $name = $_POST['name'];
+    $name = trim($name);
+
+    $price = $_POST['price'];
+
+    if (!is_numeric($price)) validation_errors_add("price", "Cena musi być liczbą");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($validationErrorUrl);
+
+    $price = intval($price);
+
+    if (strlen($name) < 3) validation_errors_add("name", "Nazwa musi mieć więcej niż 3 znaki");
+    if (strlen($name) > 64) validation_errors_add("name", "Nazwa nie może mieć więcej niż 64 znaki");
+    if ($price < 0) validation_errors_add("price", "Cena nie może być mniejsza niż 0");
+    if ($price > 999999999) validation_errors_add("price", "Cena nie może być większa niż 999 999 999zł.");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($validationErrorUrl);
+
+    db_transaction(function (mysqli $db) use ($id, $name, $price) {
+        database_delivery_methods_update($db, $id, $name, $price);
+    });
+
+    redirect_and_kill($backUrl);
+} else {
+    if (!old_input_has("name")) old_input_add("name", $data['name']);
+    if (!old_input_has("price")) old_input_add("price", $data['price']);
+}
+
 
 ob_start();
 ?>
@@ -28,8 +68,9 @@ ob_start();
     
     <div class="flex flex-row justify-end items-center w-full gap-4">
         <a href="<?= htmlspecialchars($backUrl) ?>" class="px-8 py-2 bg-neutral-600 text-neutral-200 font-bold rounded-xl">Wróć do poprzedniej strony</a>
-        <button hx-post="<?= base_url('/management/delivery-methods/edit.php') ?>"
+        <button hx-post="<?= base_url('/management/delivery-methods/edit.php', ['id' => $id, 'back_url' => $backUrl]) ?>"
                 hx-target="form"
+                hx-swap="outerHTML"
                 hx-include="form"
                 hx-trigger="click"
                 class="px-8 py-2 bg-yellow-600 text-neutral-200 font-bold rounded-xl">Zapisz</button>
@@ -38,7 +79,7 @@ ob_start();
 <?php
 $content = ob_get_clean();
 
-if (boolval($_GET['render_in_layout'] ?? "false")) {
+if (!isset($_GET['render_without_layout'])) {
     echo render_in_layout(function() use ($content) { ?>
         <div class="container mx-auto p-4">
             <?= $content ?>
