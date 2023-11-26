@@ -16,11 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     $id = intval($id);
 
-    db_transaction(function (mysqli $db) use ($id) {
-        $stmt = db_execute_stmt($db, "UPDATE delivery_methods SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL", [$id]);
-        if ($stmt->affected_rows !== 1) {
-            redirect_and_kill(base_url('/management/delivery-methods.php'));
-        }
+    db_transaction(function (mysqli $db) use ($id, $backUrl) {
+        if (database_delivery_methods_get_by_id($db, $id) === null) redirect_and_kill($backUrl);
+
+        database_delivery_methods_delete_by_id($db, $id);
+        redirect_and_kill(base_url('/management/delivery-methods.php'));
     });
 
     redirect_and_kill($backUrl);
