@@ -45,11 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     if (strlen($name) < 3) validation_errors_add("name", "Nazwa musi mieć więcej niż 3 znaki");
     if (strlen($name) > 64) validation_errors_add("name", "Nazwa nie może mieć więcej niż 64 znaki");
     if ($price < 0) validation_errors_add("price", "Cena nie może być mniejsza niż 0");
-    if ($price > 999999999) validation_errors_add("price", "Cena nie może być większa niż 999 999 999zł.");
+    if ($price > 9999.99) validation_errors_add("price", "Cena nie może być większa niż 9999.99zł.");
 
     if (!validation_errors_is_empty()) redirect_and_kill($validationErrorUrl);
 
-    db_transaction(function (mysqli $db) use ($name, $price) {
+    db_transaction(function (mysqli $db) use ($name, $price, $validationErrorUrl) {
+        if (database_delivery_methods_get_by_name($db, $name) !== null) {
+           validation_errors_add("name", "Ta nazwa jest już zajęta."); 
+           redirect_and_kill($validationErrorUrl);
+        }
+
         database_delivery_methods_create($db, $name, $price);
     });
 
