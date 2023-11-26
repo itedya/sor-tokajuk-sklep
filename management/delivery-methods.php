@@ -5,18 +5,9 @@ require_once __DIR__ . '/../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
-$rows = [
-    [
-        'id' => 1,
-        'name' => 'Pierwszy sposób',
-        'price' => 20.00,
-    ],
-    [
-        'id' => 2,
-        'name' => 'Drugi sposób',
-        'price' => 30.00,
-    ],
-];
+$db = get_db_connection();
+$rows = database_delivery_methods_get($db);
+$db->close();
 
 echo render_in_layout(function() use ($rows) { ?>
     <div class="container mx-auto">
