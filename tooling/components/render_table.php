@@ -28,7 +28,7 @@ function render_table(array $columns, array $rows): string
             <?php foreach ($rows as $row): ?>
                 <tr>
                     <?php foreach ($row as $field): ?>
-                        <td class="<?= $valueClasses ?>"><?= ($field['is_html'] ?? false) ? $field['value'] : htmlspecialchars($field['value']) ?></td>
+                        <td class="<?= $valueClasses ?>"><?= ($field['is_html'] ?? false) === true ? $field['value'] : htmlspecialchars($field['value']) ?></td>
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
