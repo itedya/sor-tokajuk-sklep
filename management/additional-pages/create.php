@@ -10,36 +10,30 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     foreach ($_POST as $key => $value) old_input_add($key, $value);
 
-    if (empty($_POST['blocks'])) {
-        validation_errors_add("text", "Pole z tekstem nie może być puste.");
-        redirect_and_kill($validationCallbackUrl);
-    }
+    if (empty($_POST['blocks'])) validation_errors_add("text", "Pole z tekstem nie może być puste.");
+    if (empty($_POST['name'])) validation_errors_add("name", "Nazwa jest wymagana");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($validationCallbackUrl);
 
     $blocks = $_POST['blocks'];
-
-    if (gettype($blocks) !== "array") {
-        validation_errors_add("text", "Pole z tekstem musi zawierać tekst");
-        redirect_and_kill($validationCallbackUrl);
-    }
-
-    if (!isset($_POST['name'])) {
-        validation_errors_add("name", "Nazwa jest wymagana");
-        redirect_and_kill($validationCallbackUrl);
-    }
-
     $name = $_POST['name'];
 
-    if (!is_string($name)) {
-        validation_errors_add("name", "Nazwa musi być tekstem.");
-        redirect_and_kill($validationCallbackUrl);
-    }
+    if (gettype($blocks) !== "string") validation_errors_add("text", "Pole z tekstem musi zawierać tekst");
+    if (!is_string($name)) validation_errors_add("name", "Nazwa musi być tekstem.");
 
+    if (!validation_errors_is_empty()) redirect_and_kill($validationCallbackUrl);
+
+    $blocks = json_decode($blocks, true);
+    if ($blocks === null) validation_errors_add("blocks", "Pole z tekstem musi zawierać tekst");
     if (strlen($name) < 3) validation_errors_add("name", "Nazwa musi mieć więcej niż 3 znaki");
-    if (strlen($name) < 64) validation_errors_add("name", "Nazwa musi mieć mniej niż 64 znaki");
+    if (strlen($name) > 64) validation_errors_add("name", "Nazwa musi mieć mniej niż 64 znaki");
+
+    if (!validation_errors_is_empty()) redirect_and_kill($validationCallbackUrl);
 
     $db = get_db_connection();
 
-    db_transaction(function (mysqli $db) use ($id, $name) {
+    $id = null;
+    db_transaction(function (mysqli $db) use (&$id, $name) {
         $i = 0;
         do {
             $id = slugify($name);
@@ -50,8 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         database_additional_pages_create($db, $id, $name);
     });
 
+    file_put_contents(__DIR__ . '/../../additional-pages/' . $id, json_encode($blocks));
+
     session_flash('after_additional_page_creation', true);
-    redirect_and_kill(base_url($validationCallbackUrl));
+    redirect_and_kill($validationCallbackUrl);
 }
 
 ob_start(); ?>
