@@ -71,47 +71,67 @@ ob_start(); ?>
 }
 </style>
 
-<form class="flex flex-col gap-8" action="<?=base_url('/management/additional-pages/create.php') ?>" method="POST">
+<form class="flex flex-col gap-8 max-w-3xl mx-auto" action="<?=base_url('/management/additional-pages/create.php') ?>" method="POST">
     <h2 class="text-center text-3xl font-bold text-neutral-300">Dodaj nową stronę</h2>
 
-    <div class="text-neutral-200 w-full stroke-neutral-800 border-neutral-800 max-w-3xl mx-auto" id="editorjs"></div>
+    <?= render_textfield(label: "Nazwa", name: "name") ?>
+
+    <div class="flex flex-col gap-1 w-full">
+        <span class="text-lg text-neutral-300 font-semibold mx-2">Tekst</span>
+        <div class="text-neutral-200 w-full stroke-neutral-800 border-neutral-800 max-w-3xl mx-auto" id="editorjs"></div>
+        <?php if (validation_errors_has("text")): ?>
+            <span class="text-red-400 font-bold text-lg"><?= htmlspecialchars(validation_errors_get("text")) ?></span>
+        <?php endif ?>
+    </div>
 
     <div class="flex flex-row justify-end w-full items-center mx-auto max-w-3xl">
         <button class="px-8 py-2 bg-green-600 text-neutral-200 rounded-xl font-bold">Dodaj</button>
     </div>
-
-    <script>
-        (() => {
-            let editor = new EditorJS({ holder: 'editorjs' });
-
-            const form = document.querySelector("form");
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
-
-                editor.save()
-                    .then(outputData => fetch('create.php', {
-                        method: "POST",
-                        body: JSON.stringify({ block: outputData.blocks })
-                    }))
-                    .then(async res => {
-                        e.target.outerHTML = await res.text();
-                        new EditorJS({ holder: 'editorjs' });
-                    });
-            });
-        })();
-    </script>
 </form>
-
 <?php
 $content = ob_get_clean();
 
+ob_start(); ?>
+let editor = new EditorJS({ holder: 'editorjs' });
+
+const form = document.querySelector("form");
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const nameInput = document.querySelector('[name="name"]');
+
+    editor.save()
+        .then(outputData => {
+            const formData = new FormData();
+            formData.append("name", nameInput.name);
+            formData.append("blocks", JSON.stringify(outputData));
+            return formData
+        })
+        .then(formData => fetch('create.php', {
+            method: "POST",
+            body: formData,
+        }))
+        .then(async res => {
+            let {data, js} = await res.json();
+            e.target.outerHTML = data;
+            eval(js);
+        });
+});
+<?php 
+$js = ob_get_clean();
+
 if (!isset($_GET['render_without_layout'])) {
-    echo render_in_layout(function() use ($content) { ?>
+    echo render_in_layout(function() use ($content, $js) { ?>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <div class="container mx-auto">
         <?= $content ?>
+        <script><?= $js ?></script>
     </div>
     <?php });
 } else {
-    echo $content;
+    header("Content-Type: application/json");
+    echo json_encode([
+        'data' => $content,
+        'js' => $js
+    ]);
 }
