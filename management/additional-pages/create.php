@@ -5,6 +5,19 @@ require_once __DIR__ . '/../../tooling/autoload.php';
 gate_redirect_if_unauthorized();
 gate_redirect_if_not_an_admin();
 
+if (session_has('after_additional_page_creation')) {
+    echo render_in_layout(function() { ?>
+        <div class="container mx-auto">
+            <div class="flex flex-col gap-4 justify-center items-center">
+                <h2 class="text-3xl font-bold text-neutral-300">Sukces</h2>
+                <p class="text-neutral-200">Pomyślnie dodano nową stronę</p>
+                <a href="<?= base_url('/management/additional-pages.php') ?>" class="px-8 py-2 text-neutral-200 bg-blue-600 rounded-xl font-bold">Przejdź do listy stron</a>
+            </div>
+        </div>
+<?php });
+return;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $validationCallbackUrl = base_url('/management/additional-pages/create.php', ['render_without_layout' => 1]);
 
@@ -47,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     file_put_contents(__DIR__ . '/../../additional-pages/' . $id, json_encode($blocks));
 
     session_flash('after_additional_page_creation', true);
-    redirect_and_kill($validationCallbackUrl);
+    http_response_code(201);
+    return;
 }
 
 ob_start(); ?>
@@ -88,18 +102,22 @@ ob_start(); ?>
 $content = ob_get_clean();
 
 ob_start(); ?>
-let editor = new EditorJS({ holder: 'editorjs' });
+let editor = new EditorJS({ 
+    holder: 'editorjs',
+    <?php if (old_input_has("blocks")): ?>
+    data: JSON.parse(`<?=old_input_get("blocks")?>`)
+    <?php endif; ?>
+});
 
 const form = document.querySelector("form");
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-
     const nameInput = document.querySelector('[name="name"]');
 
     editor.save()
         .then(outputData => {
             const formData = new FormData();
-            formData.append("name", nameInput.name);
+            formData.append("name", nameInput.value);
             formData.append("blocks", JSON.stringify(outputData));
             return formData
         })
@@ -108,6 +126,13 @@ form.addEventListener("submit", (e) => {
             body: formData,
         }))
         .then(async res => {
+            if (res.status === 201) { 
+                window.location.reload();
+                return;
+            }
+
+            editor.destroy();
+
             let {data, js} = await res.json();
             e.target.outerHTML = data;
             eval(js);
