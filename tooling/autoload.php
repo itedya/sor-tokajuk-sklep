@@ -24,6 +24,7 @@ require_once __DIR__ . "/helper_functions/validation.php";
 require_once __DIR__ . "/helper_functions/validation_errors.php";
 require_once __DIR__ . "/helper_functions/clear_unused.php";
 require_once __DIR__ . "/helper_functions/base_url.php";
+require_once __DIR__ . "/helper_functions/slugify.php";
 
 require_once __DIR__ . "/config/index.php";
 

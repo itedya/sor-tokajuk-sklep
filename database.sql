@@ -157,3 +157,11 @@ CREATE TABLE `users_favourite_products`
     CONSTRAINT `fk_users_favourite_products_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     CONSTRAINT `fk_users_favourite_products_product_id` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 );
+
+CREATE TABLE `additional_pages`
+(
+    `id` VARCHAR(70) NOT NULL,
+    `name` VARCHAR(64) NOT NULL,
+
+    CONSTRAINT `pk_additional_pages_id` PRIMARY KEY (`id`)
+);
