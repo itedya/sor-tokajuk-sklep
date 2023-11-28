@@ -15,7 +15,7 @@ function render_actions_for_page(array $site): string
 {
     ob_start(); ?>
     <div class="flex flex-row flex-wrap gap-2 p-2">
-        <a href="<?= htmlspecialchars(base_url('/additional-pages.php', ['id' => $site['id']])) ?>"
+        <a href="<?= htmlspecialchars(base_url('/additional-page.php', ['id' => $site['id']])) ?>"
            class="px-4 py-2 bg-neutral-600 text-neutral-200 rounded-xl font-bold">Odwiedź</a>
         <a href="<?= base_url('/management/additional-pages/edit.php', ['id' => $site['id']]) ?>"
            class="px-4 py-2 bg-yellow-600 text-neutral-200 rounded-xl font-bold">
