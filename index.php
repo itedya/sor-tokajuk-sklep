@@ -8,7 +8,7 @@ $db->close();
 
 echo render_in_layout(function () use ($products) { ?>
     <style type="text/tailwindcss">
-        <?= file_get_contents(__DIR__ . '/../../assets/css/product-card.css') ?>
+        <?= file_get_contents(__DIR__ . '/assets/css/product-card.css') ?>
     </style>
 
     <div class="container mx-auto">

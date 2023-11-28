@@ -6,7 +6,7 @@ function render_column_table(array $columns): string
     $valueClasses = join(' ', ['border', 'border-neutral-700', 'bg-neutral-900', 'p-2', 'text-neutral-400']);
 
     ob_start(); ?>
-    <div class="overflow-x-auto w-full">
+    <div class="overflow-x-auto w-full text-neutral-200">
         <table class="border-collapse border border-neutral-700 bg-neutral-800 w-full">
             <tbody>
             <?php foreach ($columns as $column): ?>
