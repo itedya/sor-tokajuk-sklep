@@ -17,7 +17,7 @@ function database_additional_pages_get(mysqli $db): array
     return db_query_rows($db, "SELECT * FROM additional_pages", []);
 }
 
-function database_additional_pages_get_by_id(mysqli $db, string $id): array
+function database_additional_pages_get_by_id(mysqli $db, string $id): ?array
 {
     return db_query_row($db, "SELECT * FROM additional_pages WHERE id = ?", [$id]);
 }
