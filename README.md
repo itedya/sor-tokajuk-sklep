@@ -20,7 +20,7 @@
     zarejestrowanym w sklepie kontem ale też klienci bez konta.
   - [x] System zarządzania sposobami i kosztami dostawy.
   - [x] System zarządzania sposobami płatności.
-  - [ ] Możliwość dodawania do sklepu z poziomu panelu administratora podstron informacyjnych takich jak regulamin, strona
+  - [x] Możliwość dodawania do sklepu z poziomu panelu administratora podstron informacyjnych takich jak regulamin, strona
     o nas, sposoby dostawy i inne dowolne podstrony, do których linki będą pojawiały się w menu sklepu i których treść
     będzie można edytować z poziomu panelu administratora.
 
