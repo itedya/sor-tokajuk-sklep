@@ -49,7 +49,7 @@ function render_navbar()
                         <?php if (($element['dropdown'] ?? false) === true): ?>
                             <div class="text-sm text-neutral-300 px-2 py-4 relative" data-dropdown>
                                 <button data-dropdown-button><?= htmlspecialchars($element['name']) ?></button>
-                                <div class="absolute top-12 -right-2 divide-y divide-zinc-700 border border-zinc-700 rounded-xl shadow-lg bg-zinc-900 opacity-0 min-w-5xl"
+                                <div class="absolute top-12 -right-2 divide-y divide-zinc-700 border border-zinc-700 rounded-xl shadow-lg bg-zinc-900 invisible min-w-5xl"
                                      data-dropdown-links>
                                     <?php foreach ($element['items'] as $dropdownElement): ?>
                                         <a class="block text-sm text-neutral-300 whitespace-nowrap p-2"
@@ -116,12 +116,12 @@ function render_navbar()
                 if (isDropdownButton) {
                     currentDropdown = e.target.parentNode.querySelector("[data-dropdown-links]")
                     currentDropdown.classList.toggle("active")
-                    currentDropdown.classList.toggle("opacity-0")
+                    currentDropdown.classList.toggle("invisible")
                 }
 
                 document.querySelectorAll("[data-dropdown-links].active").forEach(dropdown => {
                     if (dropdown === currentDropdown) return
-                    dropdown.classList.add("opacity-0")
+                    dropdown.classList.add("invisible")
                 })
             })
         </script>
