@@ -14,7 +14,7 @@ echo render_in_layout(function () use ($products) { ?>
     <div class="container mx-auto">
         <div class="grid grid-cols-1 auto-grid-rows gap-8 xl:grid-cols-2">
             <?php foreach ($products as $product): ?>
-                <div class="item"
+                <div class="item item-hoverable"
                      onclick="window.location.href = `<?= base_url('product.php', ['id' => $product['id']]) ?>`">
                     <div class="item-img"
                          style="background-image: url('<?= base_url("/images/" . $product['image']) ?>');">

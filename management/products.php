@@ -152,7 +152,7 @@ echo render_in_layout(function () use ($products) { ?>
                     <p class="item-description"><?= htmlspecialchars($product['description']) ?></p>
                     <span class="item-price"><?= htmlspecialchars($product['price']) ?>zł</span>
 
-                    <div class="item-buttons flex flex-row justify-end items-center gap-4">
+                    <div class="item-buttons">
                         <a href="<?= config("app.url") . "/management/products/delete.php?id=" . $product['id'] ?>"
                            class="px-8 py-2 bg-red-600 text-neutral-200 font-semibold rounded-lg">
                             Usuń
