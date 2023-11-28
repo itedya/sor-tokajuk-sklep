@@ -25,6 +25,18 @@ function render_navbar()
         ];
     }
 
+    $db = get_db_connection();
+
+    foreach (database_additional_pages_get($db) as $page) {
+        $elements[] = [
+            'href' => base_url('/additional-page.php', ['id' => $page['id']]),
+            'text' => $page['name']
+        ];
+    }
+
+
+    $db->close();
+
     ob_start();
     ?>
     <div>
@@ -37,16 +49,19 @@ function render_navbar()
                         <?php if (($element['dropdown'] ?? false) === true): ?>
                             <div class="text-sm text-neutral-300 px-2 py-4 relative" data-dropdown>
                                 <button data-dropdown-button><?= htmlspecialchars($element['name']) ?></button>
-                                <div class="absolute top-12 -right-2 divide-y divide-zinc-700 border border-zinc-700 rounded-xl shadow-lg bg-zinc-900 opacity-0 min-w-5xl" data-dropdown-links>
+                                <div class="absolute top-12 -right-2 divide-y divide-zinc-700 border border-zinc-700 rounded-xl shadow-lg bg-zinc-900 opacity-0 min-w-5xl"
+                                     data-dropdown-links>
                                     <?php foreach ($element['items'] as $dropdownElement): ?>
-                                        <a class="block text-sm text-neutral-300 whitespace-nowrap p-2" href="<?= htmlspecialchars($dropdownElement['href']) ?>">
+                                        <a class="block text-sm text-neutral-300 whitespace-nowrap p-2"
+                                           href="<?= htmlspecialchars($dropdownElement['href']) ?>">
                                             <?= htmlspecialchars($dropdownElement['text']) ?>
                                         </a>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
                         <?php else: ?>
-                            <a class="text-sm text-neutral-300 px-2 py-4 h-full" href="<?= htmlspecialchars($element['href']) ?>">
+                            <a class="text-sm text-neutral-300 px-2 py-4 h-full"
+                               href="<?= htmlspecialchars($element['href']) ?>">
                                 <?= htmlspecialchars($element['text']) ?>
                             </a>
                         <?php endif; ?>
@@ -108,7 +123,7 @@ function render_navbar()
                     if (dropdown === currentDropdown) return
                     dropdown.classList.add("opacity-0")
                 })
-            }) 
+            })
         </script>
     </div>
     <?php
