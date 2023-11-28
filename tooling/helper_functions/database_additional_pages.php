@@ -27,3 +27,9 @@ function database_additional_pages_delete_by_id(mysqli $db, string $id): int
     $stmt = db_execute_stmt($db, "DELETE FROM additional_pages WHERE id = ?", [$id]);
     return $stmt->affected_rows;
 }
+
+function database_additional_pages_update(mysqli $db, string $id, string $name): int
+{
+    $stmt = db_execute_stmt($db, "UPDATE additional_pages SET name = ? WHERE id = ?", [$name, $id]);
+    return $stmt->affected_rows;
+}
