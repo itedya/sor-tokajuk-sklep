@@ -132,7 +132,7 @@ if (!session_has("edit_session_" . $id . "_$editSessionId")) {
 
     $categories = array_map(fn($category) => [
         'text' => $category['name'],
-        'value' => $category['id']
+        'value' => strval($category['id'])
     ], db_query_rows($db, "SELECT * FROM categories", []));
 
     $categories[] = [
@@ -472,10 +472,40 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $price = $_POST['price'] ?? null;
         $categoryId = $_POST['category_id'] ?? null;
 
-        if ($name === null) validation_errors_add("name", "Pole nazwa jest wymagane.");
-        if ($description === null) validation_errors_add("description", "Pole opis jest wymagane.");
-        if ($price === null) validation_errors_add("price", "Pole cena jest wymagane.");
-        if ($categoryId === null) validation_errors_add("category_id", "Pole kategoria jest wymagane.");
+        if (empty($name)) validation_errors_add("name", "Pole nazwa jest wymagane.");
+        if (empty($description)) validation_errors_add("description", "Pole opis jest wymagane.");
+        if (!is_numeric($price)) validation_errors_add("price", "Pole cena jest wymagane.");
+        if (empty($categoryId)) validation_errors_add("category_id", "Pole kategoria jest wymagane.");
+
+        if (!validation_errors_is_empty()) redirect_and_kill($thisUrl);
+
+        $name = trim($name);
+        $description = trim($description);
+        $price = trim($price);
+
+        if (strlen($name) < 3) {
+            validation_errors_add("name", "Pole nazwa musi mieć więcej niż 3 znaki.");
+            redirect_and_kill($thisUrl);
+        }
+
+        if (strlen($name) > 64) {
+            validation_errors_add("name", "Pole nazwa musi mieć mniej niż 64 znaki.");
+            redirect_and_kill($thisUrl);
+        }
+
+        if (strlen($description) < 3) {
+            validation_errors_add("description", "Pole opis musi mieć więcej niż 3 znaki.");
+            redirect_and_kill($thisUrl);
+        }
+
+        if (strlen($description) > 1024) {
+            validation_errors_add("description", "Pole opis musi mieć mniej niż 1024 znaki.");
+            redirect_and_kill($thisUrl);
+        }
+
+        if (!validation_errors_is_empty()) redirect_and_kill($thisUrl);
+
+        $price = floatval($price);
 
         $categories = db_query_rows($db, "SELECT id FROM categories", []);
 
@@ -580,7 +610,9 @@ ob_start(); ?>
                 <input type="file" name="image" class="opacity-0 absolute top-0 left-0 w-full h-full"
                        hx-post="<?= $thisUrl ?>&action=add_image" hx-encoding="multipart/form-data"
                        hx-include="form" hx-target="form" hx-swap="outerHTML" hx-trigger="change"/>
-                <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                <div class="w-6 h-6">
+                    <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                </div>
             </div>
         </div>
         <?php if (validation_errors_has("image")): ?>
@@ -600,13 +632,17 @@ ob_start(); ?>
                         <div hx-post="<?= $thisUrl ?>&action=confirm_choose_parameter"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            </div>
                         </div>
 
                         <div hx-post="<?= $thisUrl ?>&action=resign_choose_parameter"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            </div>
                         </div>
                     </div>
                 <?php elseif ($element['type'] === "input_parameter"): ?>
@@ -616,7 +652,9 @@ ob_start(); ?>
                         <div hx-post="<?= $thisUrl ?>&action=remove_parameter&parameter_id=<?= $element['parameter_id'] ?>"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            </div>
                         </div>
                     </div>
                 <?php elseif ($element['type'] === "new_parameter_input"): ?>
@@ -626,13 +664,17 @@ ob_start(); ?>
                         <div hx-post="<?= $thisUrl ?>&action=confirm_new_parameter"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            </div>
                         </div>
 
                         <div hx-post="<?= $thisUrl ?>&action=remove_parameter&parameter_id=<?= urlencode("*new_parameter*") ?>"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            </div>
                         </div>
                     </div>
                 <?php elseif ($element['type'] === 'choose_category'): ?>
@@ -650,13 +692,17 @@ ob_start(); ?>
                         <div hx-post="<?= $thisUrl ?>&action=confirm_new_category_name"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                            </div>
                         </div>
 
                         <div hx-post="<?= $thisUrl ?>&action=resign_new_category_name"
                              hx-include="form" hx-target="form" hx-swap="outerHTML"
                              class="flex items-end p-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-xl">
-                            <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            <div class="w-6 h-6">
+                                <?= file_get_contents(__DIR__ . "/../../assets/minus-icon.svg") ?>
+                            </div>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -669,7 +715,9 @@ ob_start(); ?>
                      hx-target="form"
                      hx-swap="outerHTML"
                      class="flex flex-row gap-4 text-neutral-200 bg-neutral-800 hover:bg-neutral-700 cursor-pointer p-4 rounded-xl">
-                    <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                    <div class="w-6 h-6">
+                        <?= file_get_contents(__DIR__ . "/../../assets/plus-icon.svg") ?>
+                    </div>
                     Dodaj parametr
                 </div>
             <?php endif; ?>
