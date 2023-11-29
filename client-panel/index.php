@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../tooling/autoload.php';
 
 gate_redirect_if_unauthorized();
-gate_redirect_if_not_an_admin();
 
 $userId = auth_get_user_id();
 
