@@ -17,4 +17,4 @@ database_orders_update_status($db, $id, $order['status'] === 0 ? 1 : 0);
 
 $db->close();
 
-redirect_and_kill(base_url('/orders/details.php', ['id' => $id]));
+redirect_and_kill($_GET['previous_page'] ?? base_url('/orders/details.php', ['id' => $id]));

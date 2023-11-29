@@ -126,7 +126,7 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
         <div class="flex flex-row justify-end gap-2 lg:col-span-2">
             <?php if (auth_is_admin()): ?>
                 <a class="px-4 py-2 border-2 border-yellow-600 text-neutral-200 hover:bg-yellow-600 duration-200 font-semibold rounded-lg text-center"
-                   href="<?= base_url('/orders/change-status.php', ['id' => $order['id']]) ?>">
+                   href="<?= base_url('/orders/change-status.php', ['id' => $order['id'], 'previous_page' => $_SERVER['REQUEST_URI']]) ?>">
                     Zmień status zamówienia
                 </a>
             <?php endif; ?>
