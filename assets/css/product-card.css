@@ -6,7 +6,7 @@
 }
 
 .item.item-hoverable {
-    @apply hover:bg-neutral-800 p-4 rounded-xl
+    @apply hover:bg-neutral-800 rounded-xl
 }
 
 .item.item-hoverable:hover {
