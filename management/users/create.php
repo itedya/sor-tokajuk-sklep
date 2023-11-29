@@ -33,19 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     foreach ($_POST as $key => $value) old_input_add($key, $value);
 
     if (!validation_errors_is_empty()) {
-        redirect_and_kill($_SERVER['REQUEST_URI']);
+        redirect_and_kill(base_url("/management/users/create.php"));
     }
 
     if ($password !== $repeat_password) {
         validation_errors_add("repeat_password", "Hasła nie są takie same.");
-        redirect_and_kill($_SERVER['REQUEST_URI']);
+        redirect_and_kill(base_url("/management/users/create.php"));
     }
 
     db_transaction(function (mysqli $db) use ($email, $password) {
         $user = db_query_row($db, "SELECT * FROM users WHERE email = ?", [$email]);
         if ($user !== null) {
             validation_errors_add("email", "Użytkownik o podanym adresie email już istnieje.");
-            redirect_and_kill($_SERVER['REQUEST_URI']);
+            redirect_and_kill(base_url("/management/users/create.php"));
         }
 
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     });
 
     session_flash("user_created", true);
-    redirect_and_kill($_SERVER['REQUEST_URI']);
+    redirect_and_kill(base_url("/management/users/create.php"));
 }
 
 echo render_in_layout(function () { ?>
