@@ -366,13 +366,18 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 }
             });
 
-            sendMail($_POST['email'],
-                'Zamówienie',
-                sprintf(
-                    'Zamówienie zostało złożone. Możesz je śledzić pod linkiem: <a href="%s">%s</a>',
-                    base_url('/orders/details.php', ['id' => $orderId]),
-                    base_url('/orders/details.php', ['id' => $orderId])
-                ));
+            try {
+                sendMail($_POST['email'],
+                    'Zamówienie',
+                    sprintf(
+                        'Zamówienie zostało złożone. Możesz je śledzić pod linkiem: <a href="%s">%s</a>',
+                        base_url('/orders/details.php', ['id' => $orderId]),
+                        base_url('/orders/details.php', ['id' => $orderId])
+                    ));
+            } catch (Exception $e) {
+                // ...
+            }
+
 
             cart_empty();
             redirect_and_kill(base_url('/orders/details.php', ['id' => $orderId]));
@@ -500,14 +505,18 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 $user = database_users_get_by_id($db, auth_get_user_id());
             });
 
+            try {
+                sendMail($user['email'],
+                    'Zamówienie',
+                    sprintf(
+                        'Zamówienie zostało złożone. Możesz je śledzić pod linkiem: <a href="%s">%s</a>',
+                        base_url('/orders/details.php', ['id' => $orderId]),
+                        base_url('/orders/details.php', ['id' => $orderId])
+                    ));
+            } catch (Throwable $e) {
+                // ...
+            }
 
-            sendMail($user['email'],
-                'Zamówienie',
-                sprintf(
-                    'Zamówienie zostało złożone. Możesz je śledzić pod linkiem: <a href="%s">%s</a>',
-                    base_url('/orders/details.php', ['id' => $orderId]),
-                    base_url('/orders/details.php', ['id' => $orderId])
-                ));
 
             cart_empty();
             redirect_and_kill(base_url('/orders/details.php', ['id' => $orderId]));
