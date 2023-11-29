@@ -31,8 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         if ($product === null) redirect_and_kill(config("app.url") . "/management/products.php");
 
-        db_execute_stmt($db, "DELETE FROM products_images WHERE product_id = ?", [$id]);
-        db_execute_stmt($db, "DELETE FROM products WHERE id = ?", [$id]);
+        database_products_delete_by_id($db, $id);
     });
 
     session_flash("product_deleted", true);

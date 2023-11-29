@@ -17,7 +17,7 @@ LEFT JOIN (
         ORDER BY pi2.id
         LIMIT 1
     )
-) pi ON pi.product_id = products.id
+) pi ON pi.product_id = products.id WHERE deleted_at IS NULL
 SQL;
 
 $products = db_query_rows(get_db_connection(), $sql, []);

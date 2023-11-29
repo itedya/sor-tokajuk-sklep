@@ -27,6 +27,7 @@ LEFT JOIN (
         LIMIT 1
     )
 ) pi ON pi.product_id = products.id
+WHERE products.deleted_at IS NULL
 SQL;
 
     return db_query_rows($db, $query, []);
@@ -47,7 +48,7 @@ LEFT JOIN (
         LIMIT 1
     )
 ) pi ON pi.product_id = products.id
-WHERE category_id = ?
+WHERE category_id = ? AND products.deleted_at IS NULL
 SQL;
 
     return db_query_rows($db, $query, [$categoryId]);
@@ -55,5 +56,10 @@ SQL;
 
 function database_products_get_by_id(mysqli $db, int $id): ?array
 {
-    return db_query_row($db, "SELECT * FROM products WHERE id = ?", [$id]);
+    return db_query_row($db, "SELECT * FROM products WHERE id = ? WHERE deleted_at IS NULL", [$id]);
+}
+
+function database_products_delete_by_id(mysqli $db, int $id): void
+{
+    db_execute_stmt($db, "UPDATE products SET deleted_at = NOW() WHERE id = ?", [$id]);
 }

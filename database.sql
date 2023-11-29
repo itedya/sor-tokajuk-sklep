@@ -49,6 +49,7 @@ CREATE TABLE `products`
     `category_id` int           NOT NULL,
     `price`       DECIMAL(6, 2) NOT NULL,
     `created_at`  datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `deleted_at`  datetime               DEFAULT NULL,
 
     CONSTRAINT `pk_products_id` PRIMARY KEY (`id`)
 );
