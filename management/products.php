@@ -61,6 +61,9 @@ echo render_in_layout(function () use ($products) { ?>
 
         .item-buttons {
             grid-column: 1/3;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
         }
 
         @media (min-width: 768px) {
