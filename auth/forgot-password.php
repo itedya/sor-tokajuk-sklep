@@ -48,7 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         ]);
     $html = sprintf("<a href=\"%s\">%s</a>", $url, "Przypomnij hasło");
 
-    sendMail($email, $subject, $html);
+    try {
+        sendMail($email, $subject, $html);
+    } catch (Exception $e) {
+        // ...
+    }
 
     session_flash('after_forgot_password', true);
 

@@ -54,7 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->close();
     });
 
-    sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
+    try {
+        sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
+    } catch (Exception $e) {
+        // ...
+    }
 
     session_flash('after_registration', true);
     redirect_and_kill(config("app.url") . "/auth/after-registration.php");
