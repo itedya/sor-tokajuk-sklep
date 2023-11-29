@@ -11,12 +11,12 @@ function render_table(array $columns, array $rows): string
             <?php if (count($columns) !== 0): ?>
                 <thead>
                 <tr>
-                    <?php 
-                        foreach ($columns as $index => $column):
-                            $tempColumnClasses = $columnClasses;
-                            if ($index === 0) $tempColumnClasses .= " rounded-tl-xl";
-                            if ($index === count($columns) - 1) $tempColumnClasses .= " rounded-tr-xl";
-                    ?>
+                    <?php
+                    foreach ($columns as $index => $column):
+                        $tempColumnClasses = $columnClasses;
+                        if ($index === 0) $tempColumnClasses .= " rounded-tl-xl";
+                        if ($index === count($columns) - 1) $tempColumnClasses .= " rounded-tr-xl";
+                        ?>
                         <th class="<?= $tempColumnClasses ?>">
                             <?= $column ?>
                         </th>
@@ -35,5 +35,5 @@ function render_table(array $columns, array $rows): string
             </tbody>
         </table>
     </div>
-<?php return ob_get_clean();
+    <?php return ob_get_clean();
 }

@@ -124,6 +124,12 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
         </div>
 
         <div class="flex flex-row justify-end gap-2 lg:col-span-2">
+            <?php if (auth_is_admin()): ?>
+                <a class="px-4 py-2 border-2 border-yellow-600 text-neutral-200 hover:bg-yellow-600 duration-200 font-semibold rounded-lg text-center"
+                   href="<?= base_url('/orders/change-status.php', ['id' => $order['id']]) ?>">
+                    Zmień status zamówienia
+                </a>
+            <?php endif; ?>
             <a class="px-4 py-2 bg-neutral-600 text-neutral-200 font-semibold rounded-lg text-center"
                href="<?= htmlspecialchars($_GET['previous_page'] ?? base_url('/client-panel/index.php')) ?>">
                 Wróć do poprzedniej strony
