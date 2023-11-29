@@ -63,7 +63,7 @@ echo render_in_layout(function () { ?>
             Dodaj pracownika
         </div>
 
-        <form action="<?= $_SERVER['REQUEST_URI'] ?>" method="POST" class="flex flex-col gap-4 mx-auto w-full lg:w-1/2">
+        <form action="<?= base_url("/management/users/create.php") ?>" method="POST" class="flex flex-col gap-4 mx-auto w-full lg:w-1/2">
             <?= render_textfield(
                 "Email",
                 "email",
