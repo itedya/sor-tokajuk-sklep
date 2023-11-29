@@ -8,16 +8,20 @@ function render_navbar()
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
             ['href' => '/client-panel/index.php', 'text' => 'Panel klienta'],
-            ['dropdown' => true, 'name' => 'Zarządzanie', 'items' => [
+        ];
+
+        if (auth_is_admin()) {
+            $elements[] = ['dropdown' => true, 'name' => 'Zarządzanie', 'items' => [
                 ['href' => '/management/products.php', 'text' => 'Zarządzaj produktami'],
                 ['href' => '/management/payment-types.php', 'text' => 'Zarządzaj sposobami płatności'],
                 ['href' => '/management/delivery-methods.php', 'text' => 'Zarządzaj sposobami dostawy'],
                 ['href' => '/management/additional-pages.php', 'text' => 'Zarządzaj dodatkowymi stronami'],
                 ['href' => '/management/users.php', 'text' => 'Zarządzaj użytkownikami'],
                 ['href' => '/management/orders.php', 'text' => 'Zarządzaj zamówieniami'],
-            ]],
-            ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'],
-        ];
+            ]];
+        }
+
+        $elements[] = ['href' => '/auth/logout.php', 'text' => 'Wyloguj się'];
     } else {
         $elements = [
             ['href' => '/', 'text' => 'Strona główna'],
@@ -68,7 +72,8 @@ function render_navbar()
                         <?php endif; ?>
                     <?php endforeach; ?>
 
-                    <a href="<?= base_url('cart.php') ?>" class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
+                    <a href="<?= base_url('cart.php') ?>"
+                       class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
                         <?= file_get_contents(__DIR__ . '/../../assets/shopping-bag.svg') ?>
 
                         <?php if (cart_get_count() !== 0): ?>
@@ -78,7 +83,8 @@ function render_navbar()
                 </div>
 
                 <div class="xl:hidden flex flex-row gap-4 justify-center items-center">
-                    <a href="<?= base_url('cart.php') ?>" class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
+                    <a href="<?= base_url('cart.php') ?>"
+                       class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
                         <?= file_get_contents(__DIR__ . '/../../assets/shopping-bag.svg') ?>
 
                         <?php if (cart_get_count() !== 0): ?>
