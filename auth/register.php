@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     });
 
     try {
-        sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić hasło</a>');
+        sendMail($email, 'Potwierdź email do konta', '<a href="' . config("app.url") . '/auth/confirm-email.php?hash=' . $hash . '">Kliknij tutaj aby potwierdzić adres email</a>');
     } catch (Exception $e) {
         // ...
     }
