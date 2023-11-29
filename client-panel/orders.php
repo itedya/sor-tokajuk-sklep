@@ -22,7 +22,7 @@ ob_start(); ?>
 
             return [
                 ['value' => "#" . $row['id']],
-                ['value' => $statusHtml],
+                ['value' => $statusHtml, 'is_html' => true],
                 ['value' => '<a href="' . base_url("/orders/details.php", [
                         'id' => $row['id']
                     ]) . '" class="px-4 py-2 bg-neutral-600 text-neutral-200 font-semibold rounded-lg text-center">Szczegóły</a>', 'is_html' => true]

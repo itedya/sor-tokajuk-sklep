@@ -157,7 +157,7 @@ ob_start(); ?>
                         Usuń z ulubionych
                     </button>
                     <a class="px-8 py-2 bg-yellow-600 text-neutral-200 font-semibold rounded-lg"
-                       href="<?= base_url('/products/show.php', ['id' => $product['id']]) ?>">
+                       href="<?= base_url('/product.php', ['id' => $product['id']]) ?>">
                         Zobacz
                     </a>
                 </div>
