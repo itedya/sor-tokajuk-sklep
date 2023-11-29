@@ -25,3 +25,13 @@ function database_favourite_products_delete_by_user_id_and_product_id(mysqli $db
 {
     db_execute_stmt($db, "DELETE FROM users_favourite_products WHERE user_id = ? AND product_id = ?", [$userId, $productId]);
 }
+
+function database_favourite_products_exists_by_user_id_and_product_id(mysqli $db, int $userId, int $productId): bool
+{
+    return db_query_row($db, "SELECT * FROM users_favourite_products WHERE user_id = ? AND product_id = ?", [$userId, $productId]) !== null;
+}
+
+function database_favourite_products_create(mysqli $db, int $userId, int $productId): void
+{
+    db_execute_stmt($db, "INSERT INTO users_favourite_products (user_id, product_id) VALUES (?, ?)", [$userId, $productId]);
+}

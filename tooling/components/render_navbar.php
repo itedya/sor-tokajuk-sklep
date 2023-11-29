@@ -39,12 +39,12 @@ function render_navbar()
 
     ob_start();
     ?>
-    <div>
+    <div id="navbar">
         <div class="fixed top-0 left-0 w-full bg-zinc-900 p-4 xl:p-0 border-b border-zinc-700 shadow h-20 md:h-auto flex justify-center items-center z-40">
             <div class="container flex flex-row justify-between items-center h-full px-8">
                 <h1 class="text-3xl text-zinc-300 font-bold">TrumniX</h1>
 
-                <div class="hidden xl:flex flex-row">
+                <div class="hidden xl:flex flex-row justify-center items-center">
                     <?php foreach ($elements as $element): ?>
                         <?php if (($element['dropdown'] ?? false) === true): ?>
                             <div class="text-sm text-neutral-300 px-2 py-4 relative" data-dropdown>
@@ -66,15 +66,33 @@ function render_navbar()
                             </a>
                         <?php endif; ?>
                     <?php endforeach; ?>
+
+                    <a href="<?= base_url('cart.php') ?>" class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
+                        <?= file_get_contents(__DIR__ . '/../../assets/shopping-bag.svg') ?>
+
+                        <?php if (cart_get_count() !== 0): ?>
+                            <div class="bg-blue-600 rounded-xl text-sm p-0.5 text-center absolute -right-1/4 -top-1/4"><?= cart_get_count() ?></div>
+                        <?php endif; ?>
+                    </a>
                 </div>
 
-                <button class="p-2 text-zinc-100 xl:hidden" id="navbarItemsTrigger">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/>
-                    </svg>
-                </button>
+                <div class="xl:hidden flex flex-row gap-4 justify-center items-center">
+                    <a href="<?= base_url('cart.php') ?>" class="w-6 aspect-square text-neutral-200 mx-4 relative cursor-pointer">
+                        <?= file_get_contents(__DIR__ . '/../../assets/shopping-bag.svg') ?>
+
+                        <?php if (cart_get_count() !== 0): ?>
+                            <div class="bg-blue-600 rounded-xl text-sm p-0.5 text-center absolute -right-1/4 -top-1/4"><?= cart_get_count() ?></div>
+                        <?php endif; ?>
+                    </a>
+
+                    <button class="p-2 text-zinc-100" id="navbarItemsTrigger">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 

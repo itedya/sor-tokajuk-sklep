@@ -79,11 +79,6 @@
 }
 
 @media (min-width: 1080px) {
-    .item {
-        grid-template-columns: 200px auto auto;
-        grid-template-rows: auto auto;
-    }
-
     .item-img {
         grid-column: 1 / 2;
         grid-row: 1 / 3;
