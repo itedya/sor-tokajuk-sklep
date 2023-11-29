@@ -99,7 +99,7 @@ function render_other_details(array $paymentMethods, array $deliveryMethods, ?ar
         <input type="hidden"
                name="address_id" <?php if (old_input_has("address_id")): ?> value="<?= old_input_get("address_id") ?>" <?php endif; ?> />
         <?php if (validation_errors_has("address_id")): ?>
-            <span><?= validation_errors_get("address_id") ?></span>
+            <span class="text-red-400 font-bold"><?= validation_errors_get("address_id") ?></span>
         <?php endif; ?>
             <div class="flex flex-row overflow-x-auto w-full gap-4">
                 <?php foreach ($addresses as $address): ?>
@@ -126,7 +126,7 @@ function render_other_details(array $paymentMethods, array $deliveryMethods, ?ar
                 value="<?= old_input_get("delivery_address_id") ?>"
             <?php endif; ?> />
         <?php if (validation_errors_has("delivery_address_id")): ?>
-            <span><?= validation_errors_get("delivery_address_id") ?></span>
+            <span class="text-red-400 font-bold"><?= validation_errors_get("delivery_address_id") ?></span>
         <?php endif; ?>
             <div class="flex flex-row overflow-x-auto gap-4">
                 <?php foreach ($addresses as $address): ?>
