@@ -527,6 +527,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $categoryId = intval($categoryId);
         }
 
+        if (count($editSessionData['images']) === 0) {
+            validation_errors_add("image", "Musisz dodać przynajmniej jedno zdjęcie.");
+        }
+
         if (!validation_errors_is_empty()) {
             redirect_and_kill($thisUrl);
         }
