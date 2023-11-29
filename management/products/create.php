@@ -473,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $parameters[$parameterName] = trim($_POST["parameter_" . $parameterName]);
             if ($parameters[$parameterName] === "") {
                 validation_errors_add("parameter_" . $parameterName, "Pole jest wymagane.");
-                redirect_and_kill($thisUrl . "&render_without_layout=true");
+                redirect_and_kill($thisUrl);
             }
         }
 
