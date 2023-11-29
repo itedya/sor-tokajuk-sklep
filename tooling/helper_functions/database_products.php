@@ -56,7 +56,7 @@ SQL;
 
 function database_products_get_by_id(mysqli $db, int $id): ?array
 {
-    return db_query_row($db, "SELECT * FROM products WHERE id = ? WHERE deleted_at IS NULL", [$id]);
+    return db_query_row($db, "SELECT * FROM products WHERE id = ? AND deleted_at IS NULL", [$id]);
 }
 
 function database_products_delete_by_id(mysqli $db, int $id): void
