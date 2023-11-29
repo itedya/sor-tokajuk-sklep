@@ -9,6 +9,7 @@ require_once __DIR__ . "/helper_functions/auth.php";
 require_once __DIR__ . "/helper_functions/database.php";
 require_once __DIR__ . "/helper_functions/database_users.php";
 require_once __DIR__ . "/helper_functions/database_orders.php";
+require_once __DIR__ . "/helper_functions/database_order_details.php";
 require_once __DIR__ . "/helper_functions/database_delivery_method.php";
 require_once __DIR__ . "/helper_functions/database_products.php";
 require_once __DIR__ . "/helper_functions/database_payment_types.php";

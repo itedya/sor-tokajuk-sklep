@@ -42,7 +42,7 @@ function render_navbar()
     <div id="navbar">
         <div class="fixed top-0 left-0 w-full bg-zinc-900 p-4 xl:p-0 border-b border-zinc-700 shadow h-20 md:h-auto flex justify-center items-center z-40">
             <div class="container flex flex-row justify-between items-center h-full px-8">
-                <h1 class="text-3xl text-zinc-300 font-bold">TrumniX</h1>
+                <a href="<?= base_url('/') ?>" class="text-3xl text-zinc-300 font-bold">TrumniX</a>
 
                 <div class="hidden xl:flex flex-row justify-center items-center">
                     <?php foreach ($elements as $element): ?>

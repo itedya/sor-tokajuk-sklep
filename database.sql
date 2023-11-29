@@ -24,7 +24,7 @@ CREATE TABLE `email_verification_attempts`
 CREATE TABLE `password_resets`
 (
     `uuid`                 varchar(64),
-    `user_id`              int          NOT NULL,
+    `user_id`              int NOT NULL,
     `created_at_timestamp` int unsigned NOT NULL,
 
     CONSTRAINT PRIMARY KEY `pk_password_resets_uuid` (`uuid`),
@@ -97,7 +97,7 @@ CREATE TABLE `delivery_methods`
 CREATE TABLE `addresses`
 (
     `id`          int          NOT NULL AUTO_INCREMENT,
-    `user_id`     int          NOT NULL,
+    `user_id`     int,
     `first_line`  varchar(255) NOT NULL,
     `second_line` varchar(255) NOT NULL,
     `city`        varchar(255) NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE `payment_types`
 CREATE TABLE `orders`
 (
     `id`                  int      NOT NULL AUTO_INCREMENT,
-    `user_id`             int      NOT NULL,
+    `user_id`             int,
     `status`              int      NOT NULL,
     `delivery_method_id`  int      NOT NULL,
     `delivery_address_id` int      NOT NULL,
@@ -160,7 +160,7 @@ CREATE TABLE `users_favourite_products`
 
 CREATE TABLE `additional_pages`
 (
-    `id` VARCHAR(70) NOT NULL,
+    `id`   VARCHAR(70) NOT NULL,
     `name` VARCHAR(64) NOT NULL,
 
     CONSTRAINT `pk_additional_pages_id` PRIMARY KEY (`id`)

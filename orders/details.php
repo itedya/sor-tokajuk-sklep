@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../tooling/autoload.php';
 
-gate_redirect_if_unauthorized();
-
 $orderId = $_GET['id'] ?? null;
 if (!is_numeric($orderId)) abort(404);
 $orderId = intval($orderId);
@@ -13,11 +11,15 @@ $order = database_orders_get_by_id($db, $_GET['id']);
 
 if ($order === null) abort(404);
 
+$user = null;
+if ($order['user_id'] !== null) {
+    gate_redirect_if_unauthorized();
+    $user = database_users_get_by_id($db, $order['user_id']);
+}
+
 if ($order['user_id'] !== auth_get_user_id() && !auth_is_admin()) {
     abort(404);
 }
-
-$user = database_users_get_by_id($db, $order['user_id']);
 
 $address = database_addresses_get_by_id_with_deleted($db, $order['address_id']);
 
@@ -51,7 +53,7 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
             <?= render_column_table([
                 [
                     ['type' => 'COLUMN', 'value' => 'Zamówione przez'],
-                    ['type' => 'ROW', 'value' => $user['email']]
+                    ['type' => 'ROW', 'value' => $user['email'] ?? 'Użytkownik niezalogowany']
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Adres dostawy'],
@@ -59,7 +61,7 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Adres'],
-                    ['type' => 'ROW', 'value' => $deliveryAddress['first_line']]
+                    ['type' => 'ROW', 'value' => $deliveryAddress['first_line'] . ' ' . $deliveryAddress['second_line']]
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Miasto'],
@@ -75,7 +77,7 @@ echo render_in_layout(function () use ($order, $user, $address, $products, $deli
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Adres'],
-                    ['type' => 'ROW', 'value' => $address['first_line']]
+                    ['type' => 'ROW', 'value' => $address['first_line'] . ' ' . $address['second_line']]
                 ],
                 [
                     ['type' => 'COLUMN', 'value' => 'Miasto'],

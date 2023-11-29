@@ -28,26 +28,37 @@ echo render_in_layout(function () use ($user) { ?>
                     hx-trigger="click"
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
-                    class="py-4 px-6 text-neutral-300 text-left">Ustaw nowe hasło</button>
+                    class="py-4 px-6 text-neutral-300 text-left">Ustaw nowe hasło
+            </button>
             <button hx-get="<?= base_url("/client-panel/favourite_products.php") ?>"
                     hx-trigger="click"
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
-                    class="py-4 px-6 text-neutral-300 text-left">Ulubione produkty</button>
+                    class="py-4 px-6 text-neutral-300 text-left">Ulubione produkty
+            </button>
             <button hx-get="<?= base_url("/client-panel/orders.php") ?>"
                     hx-trigger="click"
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
-                    class="py-4 px-6 text-neutral-300 text-left">Zamówienia</button>
+                    class="py-4 px-6 text-neutral-300 text-left">Zamówienia
+            </button>
             <button hx-get="<?= base_url("/client-panel/addresses.php") ?>"
                     hx-trigger="click"
                     hx-swap="innerHTML"
                     hx-target="#swappable-panel"
-                    class="py-4 px-6 text-neutral-300 text-left">Adresy</button>
+                    class="py-4 px-6 text-neutral-300 text-left">Adresy
+            </button>
         </div>
 
-        <div id="swappable-panel" class="md:col-span-2 md:row-span-2 lg:col-span-3 w-full justify-self-center border border-neutral-700 rounded-xl p-4 md:p-8">
-                <?php require __DIR__ . "/edit.php"; ?>
+        <div id="swappable-panel"
+             class="md:col-span-2 md:row-span-2 lg:col-span-3 w-full justify-self-center border border-neutral-700 rounded-xl p-4 md:p-8">
+            <?php
+            $panel = $_GET['panel'] ?? 'edit';
+            if (!in_array($panel, ['edit', 'addresses'])) {
+                $panel = 'edit';
+            }
+
+            require __DIR__ . "/" . $panel . ".php"; ?>
         </div>
     </div>
 <?php });

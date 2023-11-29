@@ -57,3 +57,24 @@ function cart_get_count(): int
 
     return $count;
 }
+
+function cart_remove_product(int $id, int $quantity = 1): void
+{
+    $items = session_get('cart', []);
+    $index = array_search($id, array_column($items, 'id'));
+
+    if ($index === false) return;
+
+    $items[$index]['quantity'] -= $quantity;
+
+    if ($items[$index]['quantity'] <= 0) {
+        unset($items[$index]);
+    }
+
+    session_set('cart', $items);
+}
+
+function cart_empty(): void
+{
+    session_remove('cart');
+}

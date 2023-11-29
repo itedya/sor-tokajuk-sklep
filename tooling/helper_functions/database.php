@@ -35,7 +35,7 @@ function db_execute_stmt(mysqli $db, string $query, array $parameters): mysqli_s
 
     foreach ($parameters as $parameterValue) {
         $type = match (gettype($parameterValue)) {
-            "string" => "s",
+            "string", "NULL" => "s",
             "integer" => "i",
             "double", "boolean" => "d",
             default => throw new Exception("Nieznany typ zmiennej, dodaj taki: " . gettype($parameterValue))
