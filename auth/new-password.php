@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
 
     db_transaction(function ($db) use ($new_password, $uuid) {
-        $result = db_query_row($db, "SELECT user_id FROM password_resets WHERE uuid = ?", [$uuid]);
+        $result = db_query_row($db, "SELECT user_id FROM password_resets WHERE uuid = ?", [base64_decode($uuid)]);
 
         if ($result === null) redirect_and_kill(config("app.url") . "/");
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $userId
         ]);
 
-        db_execute_stmt($db, "DELETE FROM password_resets WHERE uuid = ?", [$uuid]);
+        db_execute_stmt($db, "DELETE FROM password_resets WHERE uuid = ?", [base64_decode($uuid)]);
     });
 
     echo render_in_layout(function () { ?>
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     die();
 } else {
     db_transaction(function ($db) use ($uuid) {
-        $result = db_query_row($db, "SELECT created_at_timestamp FROM password_resets WHERE uuid = ?", ['uuid' => $uuid]);
+        $result = db_query_row($db, "SELECT created_at_timestamp FROM password_resets WHERE uuid = ?", ['uuid' => base64_decode($uuid)]);
 
         if ($result === null) {
             redirect_and_kill(config("app.url") . "/");
