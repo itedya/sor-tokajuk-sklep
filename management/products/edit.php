@@ -507,6 +507,16 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
         $price = floatval($price);
 
+        if ($price < 0) {
+            validation_errors_add("price", "Pole cena musi być większe niż 0.");
+            redirect_and_kill($thisUrl);
+        }
+
+        if ($price > 9999.99) {
+            validation_errors_add("price", "Pole cena musi być mniejsze niż 9999.99.");
+            redirect_and_kill($thisUrl);
+        }
+
         $categories = db_query_rows($db, "SELECT id FROM categories", []);
 
         if (in_array($categoryId, array_keys($editSessionData['new_categories']))) {
@@ -622,7 +632,7 @@ ob_start(); ?>
         <div class="flex flex-col gap-4" id="edit-product-form-body">
             <?= render_textfield(label: 'Nazwa', name: 'name', type: 'text') ?>
             <?= render_textfield(label: 'Opis', name: 'description', type: 'textarea') ?>
-            <?= render_textfield(label: 'Cena', name: 'price', type: 'number') ?>
+            <?= render_textfield(label: 'Cena', name: 'price', type: 'number', step: '0.01') ?>
 
             <?php foreach ($editSessionData['elements'] as $element): ?>
                 <?php if ($element['type'] === 'choose_parameter'): ?>

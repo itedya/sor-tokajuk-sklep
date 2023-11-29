@@ -5,7 +5,8 @@ function render_textfield(string           $label,
                           string           $type = 'text',
                           bool|null|string $validationError = null,
                           bool|null|string $oldInput = null,
-                          ?string          $id = null
+                          ?string          $id = null,
+                          ?string          $step = null
 ): string
 {
     if ($id === null) $id = uniqid("input_");
@@ -36,7 +37,7 @@ function render_textfield(string           $label,
             <label for="<?= $id ?>" class="text-lg text-neutral-300 font-semibold mx-2"><?= $label ?></label>
             <input type="<?= $type ?>" name="<?= $name ?>" id="<?= $id ?>"
                    class="p-4 w-full bg-neutral-800 rounded-xl border-4 border-transparent outline-none focus:outline-none text-lg text-neutral-300 focus:border-neutral-700 duration-300"
-                   value="<?= $oldInput ?>"
+                   value="<?= $oldInput ?>" <?= $step !== null ? "step=\"$step\"" : "" ?>
             />
             <?= $validationError ?>
         </div>
