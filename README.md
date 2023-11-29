@@ -24,17 +24,17 @@
     o nas, sposoby dostawy i inne dowolne podstrony, do których linki będą pojawiały się w menu sklepu i których treść
     będzie można edytować z poziomu panelu administratora.
 
-- [ ] Część III - Grudzień
+- [x] Część III - Grudzień
   - [x] Panel klienta (dostępny po zalogowaniu), a w nim:
       - [x] możliwość edycji swoich danych osobowych i danych do wysyłki (adres wysyłki może być inny niż dane klienta)
       - [x] możliwość przeglądania historii swoich zamówień
       - [x] możliwość tworzenia listy produktów ulubionych
-  - [ ] Katalog produktów z możliwością wyszukiwania produktów po różnych parametrach. Z katalogu produktów można
+  - [x] Katalog produktów z możliwością wyszukiwania produktów po różnych parametrach. Z katalogu produktów można
     bezpośrednio dodać produkt do koszyka lub do listy ulubionych (tylko dla zalogowanych użytkowników)
-  - [ ] Karta produktu, na której są prezentowane szczegóły produktu wraz z galerią zdjęć produktów. Z poziomu karty
+  - [x] Karta produktu, na której są prezentowane szczegóły produktu wraz z galerią zdjęć produktów. Z poziomu karty
     produktu można dodawać produkty do koszyka lub do listy produktów ulubionych (tylko dla zalogowanych użytkowników)
-  - [ ] Koszyk na zakupy
-  - [ ] Proces zakupowy, w którym klient może wybrać rodzaj przesyłki, sposób płatności i podać niezbędne dane do zakupu. Ważne: w sklepie mogą robić zakupy zarówno klienci zarejestrowani jak i klienci nie posiadający konta w klepie.
+  - [x] Koszyk na zakupy
+  - [x] Proces zakupowy, w którym klient może wybrać rodzaj przesyłki, sposób płatności i podać niezbędne dane do zakupu. Ważne: w sklepie mogą robić zakupy zarówno klienci zarejestrowani jak i klienci nie posiadający konta w klepie.
 
 - [ ] Część IV - Quality Check
   - [ ] Naprawa wszystkich bad spellingów oraz liczb mnogich i pojedyńczych czy są dobrze powstawiane
