@@ -16,7 +16,7 @@ function sendMail(string $address, string $subject, string $body): void
 
     $mail->isHTML();
     $mail->Subject = $subject;
-    $mail->Body = $body;
+    $mail->Body = $body . "<br /><br /> Obserwuj nas, zanim my zaczniemy obserwować Ciebie 😉 <br />Zakład pogrzebowy TrumniX sp. z o. o.";
 
     $mail->send();
 }
